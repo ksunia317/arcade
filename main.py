@@ -9,6 +9,7 @@ SCREEN_TITLE = "CardMan Game Arcade"
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
+
         self.background_color = arcade.color.AMAZON
         self.selected_option = 0
         self.menu_options = [("Начать игру", "start"), ("Загрузить игру", "load"), ("Настройки", "settings"),
