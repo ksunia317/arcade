@@ -7,19 +7,6 @@ SCREEN_HEIGHT = 768
 SCREEN_TITLE = "CardMan Game Arcade"
 
 
-# class ChooseExample(arcade.Window):
-#
-#
-#     def __init__(self):
-#         super().__init__(800, 600, "Choose Example Window")
-#         self.background_color = arcade.color.DARK_SLATE_BLUE
-#
-#     def on_draw(self):
-#         self.clear()
-#         arcade.draw_text("Вы нашли точку!", 400, 300,
-#                          arcade.color.GOLD, 36, anchor_x="center")
-#         arcade.draw_text("Закройте это окно чтобы вернуться в игру",
-#                          400, 250, arcade.color.LIGHT_GRAY, 20, anchor_x="center")
 
 
 class MenuView(arcade.View):
