@@ -1,9 +1,25 @@
 import arcade
 from random import randint, random, choice
+from chooseExample import ChooseExample
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 SCREEN_TITLE = "CardMan Game Arcade"
+
+
+# class ChooseExample(arcade.Window):
+#
+#
+#     def __init__(self):
+#         super().__init__(800, 600, "Choose Example Window")
+#         self.background_color = arcade.color.DARK_SLATE_BLUE
+#
+#     def on_draw(self):
+#         self.clear()
+#         arcade.draw_text("Вы нашли точку!", 400, 300,
+#                          arcade.color.GOLD, 36, anchor_x="center")
+#         arcade.draw_text("Закройте это окно чтобы вернуться в игру",
+#                          400, 250, arcade.color.LIGHT_GRAY, 20, anchor_x="center")
 
 
 class MenuView(arcade.View):
@@ -76,6 +92,15 @@ class Player(arcade.Sprite):
             self.top = SCREEN_HEIGHT
 
 
+class Point(arcade.Sprite):
+    def __init__(self, x, y, point_size=15):
+        super().__init__()
+        self.texture = arcade.make_soft_circle_texture(point_size, arcade.color.GOLD, 255, 255)
+        self.center_x = x
+        self.center_y = y
+        self.point_size = point_size
+
+
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -89,15 +114,21 @@ class GameView(arcade.View):
         self.offset_x = 0
         self.offset_y = 0
         self.wall_list = None
+        self.point_list = None
+        self.points_collected = 0
         self.setup()
 
     def setup(self):
         self.player_list = arcade.SpriteList()
-        self.player = Player()
-        self.player_list.append(self.player)
         self.wall_list = arcade.SpriteList()
+        self.point_list = arcade.SpriteList()
+        self.points_collected = 0
         self.generate_maze_data()
         self.create_walls()
+        self.player = Player()
+        self.place_player_in_free_position()
+        self.player_list.append(self.player)
+        self.create_points()
 
     def generate_maze_data(self):
         width = 21
@@ -223,10 +254,40 @@ class GameView(arcade.View):
                     wall.center_y = self.offset_y + y * self.cell_size + self.cell_size // 2
                     self.wall_list.append(wall)
 
+    def place_player_in_free_position(self):
+        list_positions = []
+        for y in range(self.maze_height):
+            for x in range(self.maze_width):
+                if self.maze[y][x] == 0:
+                    pos_x = self.offset_x + x * self.cell_size + self.cell_size // 2
+                    pos_y = self.offset_y + y * self.cell_size + self.cell_size // 2
+                    list_positions.append((pos_x, pos_y))
+        if list_positions:
+            pos_x, pos_y = choice(list_positions)
+            self.player.center_x = pos_x
+            self.player.center_y = pos_y
+
+    def create_points(self):
+        for _ in range(5):
+            list_positions = []
+            for y in range(self.maze_height):
+                for x in range(self.maze_width):
+                    if self.maze[y][x] == 0:
+                        pos_x = self.offset_x + x * self.cell_size + self.cell_size // 2
+                        pos_y = self.offset_y + y * self.cell_size + self.cell_size // 2
+                        if (abs(pos_x - self.player.center_x) > self.cell_size * 2 or
+                                abs(pos_y - self.player.center_y) > self.cell_size * 2):
+                            list_positions.append((pos_x, pos_y))
+            if list_positions:
+                pos_x, pos_y = choice(list_positions)
+                point = Point(pos_x, pos_y, self.cell_size // 2)
+                self.point_list.append(point)
+
     def on_draw(self):
         self.clear()
         if self.wall_list:
             self.wall_list.draw()
+        self.point_list.draw()
         self.player_list.draw()
 
     def on_update(self, delta_time):
@@ -244,6 +305,16 @@ class GameView(arcade.View):
                         self.player.top = wall.bottom
                     else:
                         self.player.bottom = wall.top
+        points = arcade.check_for_collision_with_list(self.player, self.point_list)
+        for point in points:
+            point.remove_from_sprite_lists()
+            self.points_collected += 1
+            self.open_choose_window()
+
+    def open_choose_window(self):
+        choose_window = ChooseExample(800, 600, "Выбор карты")
+        choose_window.setup()
+        choose_window.run()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
