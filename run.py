@@ -21,6 +21,7 @@ class Run(arcade.View):
     
     def setup(self):
         self.generate_run()
+
     
     def on_draw(self):
         self.clear()
@@ -86,7 +87,8 @@ class Run(arcade.View):
         data = {"card": {"border_color": (255, 255, 255),
                          "background": (100, 100, 100),
                          "text": "Пьяный Эльф",
-                         "text_color": (255, 255, 0)},
+                         "text_color": (255, 255, 0),
+                         "texture": "assets/rogues/scaled_x9/square_1_x3.png"},
                 "actions": ["ДА", "Нет"],
                 "background": (0, 0, 0),
                 "text": "Хочешь потусить?",
@@ -94,14 +96,6 @@ class Run(arcade.View):
         self.rooms.append(data)
         self.indx = 0
         return
-        self.indx = 0
-        self.rooms = []
-        for i in range(10):
-            data = {"card": {},
-                    "actions": [],
-                    "background": (0, 0, 0),
-                    "text": "ПРИВЕТ",
-                    "text_color": (0, 0, 0)}
 
     def draw_card(self):
         card = self.rooms[-1]["card"]
@@ -119,7 +113,14 @@ class Run(arcade.View):
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
-
+        self.sprite = arcade.Sprite()
+        texture = arcade.load_texture(card["texture"],
+                                      hit_box_algorithm=None)
+        self.sprite.texture = texture
+        self.sprite.center_x = 400
+        self.sprite.center_y = 500
+        self.sprite.scale = 3.0
+        arcade.draw_sprite(self.sprite)
     def agree(self):
         card = self.rooms[-1]["card"]
         card["agree"]()
