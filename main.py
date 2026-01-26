@@ -2,11 +2,10 @@ import arcade
 from random import randint, random, choice
 from chooseExample import ChooseExample
 
+
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 SCREEN_TITLE = "CardMan Game Arcade"
-
-
 
 
 class MenuView(arcade.View):
