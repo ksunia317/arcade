@@ -321,7 +321,6 @@ class GameView(arcade.View):
         elif key in (arcade.key.A, arcade.key.D):
             self.player.change_x = 0
 
-
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     menu_view = MenuView()

@@ -1,80 +1,81 @@
 import arcade
 
-# Настройки окна
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Меню в Arcade"
 
-# Цвета
-BACKGROUND_COLOR = arcade.color.DARK_BLUE
-TEXT_COLOR = arcade.color.WHITE
-HIGHLIGHT_COLOR = arcade.color.YELLOW
+TEA_GREEN = (0, 255, 0)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+DARK_BLUE = (0, 0, 139)
+BLACK = (0, 0, 0)
 
-class MenuView(arcade.View):
-    def __init__(self):
-        super().__init__()
-        self.menu_items = ["Начать игру", "Настройки", "Выход"]
-        self.selected_index = 0  # Текутельно выделенный пункт
 
-    def setup():
-        arcade.start_render()
-        
+class ChooseExample(arcade.Window):
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title, resizable=False)
+        self.background_color = DARK_BLUE
+        self.card_width = 180
+        self.card_height = 260
+        self.cards = []
+        self.glows = []
+        self.cards.append({"x": 200, "y": 300})
+        self.cards.append({"x": 600, "y": 300})
+        self.glows = [False, False]
+
+    def setup(self):
+        pass
 
     def on_draw(self):
         self.clear()
-        
-        # Фон
-        arcade.set_background_color(BACKGROUND_COLOR)
-        
-        # Заголовок
-        arcade.draw_text(
-            "ГЛАВНОЕ МЕНЮ",
-            SCREEN_WIDTH // 2,
-            SCREEN_HEIGHT - 100,
-            TEXT_COLOR,
-            font_size=36,
-            anchor_x="center",
-            anchor_y="center"
-        )
-        
-        # Пункты меню
-        for i, item in enumerate(self.menu_items):
-            color = HIGHLIGHT_COLOR if i == self.selected_index else TEXT_COLOR
+        for i, card in enumerate(self.cards):
+            x, y = card["x"], card["y"]
+            if self.glows[i]:
+                arcade.draw_lrbt_rectangle_filled(
+                    x - self.card_width/2 - 10,
+                    x + self.card_width/2 + 10,
+                    y - self.card_height/2 - 10,
+                    y + self.card_height/2 + 10,
+                    CYAN
+                )
+            arcade.draw_lrbt_rectangle_filled(
+                x - self.card_width/2,
+                x + self.card_width/2,
+                y - self.card_height/2,
+                y + self.card_height/2,
+                TEA_GREEN
+            )
+            arcade.draw_lrbt_rectangle_outline(
+                x - self.card_width/2,
+                x + self.card_width/2,
+                y - self.card_height/2,
+                y + self.card_height/2,
+                MAGENTA,
+                border_width=4
+            )
             arcade.draw_text(
-                item,
-                SCREEN_WIDTH // 2,
-                SCREEN_HEIGHT // 2 - i * 50,
-                color,
-                font_size=24,
+                "К.О.Т.",
+                x,
+                y,
+                BLACK,
+                font_size=28,
+                font_name="Arial",
                 anchor_x="center",
                 anchor_y="center"
             )
 
-    def on_key_press(self, key, modifiers):
-        if key == arcade.key.UP:
-            self.selected_index = (self.selected_index - 1) % len(self.menu_items)
-        elif key == arcade.key.DOWN:
-            self.selected_index = (self.selected_index + 1) % len(self.menu_items)
-        elif key == arcade.key.ENTER:
-            self.select_item()
+    def on_mouse_motion(self, x, y, dx, dy):
+        for i, card in enumerate(self.cards):
+            cx, cy = card["x"], card["y"]
+            if (cx - self.card_width / 2 < x < cx + self.card_width / 2 and
+                    cy - self.card_height / 2 < y < cy + self.card_height / 2):
+                self.glows[i] = True
+            else:
+                self.glows[i] = False
 
-    def select_item(self):
-        selected_text = self.menu_items[self.selected_index]
-        if selected_text == "Начать игру":
-            print("Запускаем игру!")
-            # Здесь можно переключиться на игровой экран
-        elif selected_text == "Настройки":
-            print("Открываем настройки")
-            # Здесь логика для настроек
-        elif selected_text == "Выход":
-            print("Выход из игры")
-            arcade.close_window()
 
 def main():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    menu = MenuView()
-    window.show_view(menu)
+    game = ChooseExample(800, 600, "Arcade Первый Контакт")
+    game.setup()
     arcade.run()
+
 
 if __name__ == "__main__":
     main()
