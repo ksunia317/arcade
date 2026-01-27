@@ -89,27 +89,27 @@ def another_one(x):
 
 def mage_func(x, color):
     if color == "blue":
-        change_p(x, atr=15)
-        status = CARDS["status"].copy()
-        status["top_text"] = "Ваше лицо стало привлекательнее"
-        open_card(x, status)
+        if (change_p(x, atr=15)):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Ваше лицо стало привлекательнее"
+            open_card(x, status)
     if color == "red":
-        change_p(x, power=15)
-        status = CARDS["status"].copy()
-        status["top_text"] = "Вас переполняет мощь"
-        status["texture"] = path + "items/scaled_x9/square_19_x5.png"
-        open_card(x, status)
+        if (change_p(x, power=15)):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Вас переполняет мощь"
+            status["texture"] = path + "items/scaled_x9/square_19_x5.png"
+            open_card(x, status)
     if color == "yellow":
-        change_p(x, money=15)
-        status = CARDS["status"].copy()
-        status["top_text"] = "Кошелек тяжелеет"
-        status["texture"] = path + "items/scaled_x9/square_141_x5.png"
-        open_card(x, status)
+        if (change_p(x, money=15)):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Кошелек тяжелеет"
+            status["texture"] = path + "items/scaled_x9/square_141_x5.png"
+            open_card(x, status)
     if color == "green":
-        change_p(x, karma=15)
-        status = CARDS["status"].copy()
-        status["top_text"] = "Народ доволен"
-        open_card(x, status)
+        if (change_p(x, karma=15)):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Народ доволен"
+            open_card(x, status)
 
 
 example = {"border_color": (255, 255, 255),
