@@ -1,13 +1,15 @@
 import random
+from json import dump, loads
 
 
 def claim_for_POP(x, money):
-    if (change_p(x, money)):
+    if (change_p(x, money=money)):
         status = CARDS["status"].copy()
         status["top_text"] = "Налог Уплачен, народ вас любит"
         status["texture"] = path + "items/scaled_x9/square_141_x5.png"
         status["text"] = "-20 денег"
         open_card(x, status)
+        print(x.cnt)
 
 
 def change_p(x, karma=0, money=0, power=0, atr=0):
@@ -15,6 +17,43 @@ def change_p(x, karma=0, money=0, power=0, atr=0):
     x.money += money
     x.power += power
     x.atractive += atr
+    status = CARDS["status"].copy()
+    status["text"] = "СМЕРТЬ"
+    status["agree"] = lambda x: exit_func(x)
+    status["disagree"] = lambda x: exit_func(x)
+    f = 0
+    if x.karma > 100:
+        status["top_text"] = "Народ настолько вас любил, что убил"
+        f = 1
+    elif x.karma < 0:
+        status["top_text"] = "Народ ненавидит вас, он убил вас"
+        f = 1
+    elif x.money > 100:
+        status["top_text"] = "Денги фраера сгубили"
+        f = 1
+    elif x.money < 0:
+        status["top_text"] = "ВЫ УМЕРЛИ ОТ БЕДНОСТИ"
+        f = 1
+    elif x.atractive < 0:
+        status["top_text"] = "Вас перепутали с гоблином"
+        f = 1
+    elif x.atractive > 100:
+        status["top_text"] = "Вы были слишком красивы для мира сего"
+        f = 1
+    if (f):
+        status["text"] = f"СЧЕТ: {x.cnt}"
+        mx = 0
+        try:
+            with open("conf.json", "r") as f:
+                mx = loads(f)[0]
+        except Exception:
+            pass
+        if (mx < x.cnt):
+            status["text"] = f"ЛУЧШИЙ СЧЕТ: {x.cnt}"
+            with open("conf.json", "w") as f:
+                dump([x.cnt], f)
+        open_card(x, status)
+        return False
     return True
 
 
@@ -136,3 +175,7 @@ ANTI_POP["disagree"] = lambda x: claim_for_POP(x, -20)
 ANTI_POP["agree"] = lambda x: ANTI_POP_FUNC(x)
 ANTI_POP["texture"] = path + "rogues/scaled_x9/square_15_x5.png"
 CARDS["antipop"] = ANTI_POP
+
+
+def exit_func(x):
+    x.reset()

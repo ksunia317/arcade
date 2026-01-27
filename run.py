@@ -126,6 +126,14 @@ class Run(arcade.View):
     def disagree(self):
         card = self.rooms[-1]["card"]
         card["disagree"](self)
+    
+    def reset(self):
+        self.karma = 50
+        self.atractive = 50
+        self.money = 50
+        self.power = 50
+        self.generate_run()
+        self.cnt = 0
 
 
 def main():
