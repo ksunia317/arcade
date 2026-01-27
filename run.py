@@ -13,9 +13,10 @@ class Run(arcade.View):
         self.background_color = (0, 0, 0)
         self.selected_indx = 0
         self.selected = 0
-        self.karma = 100
-        self.health = 100
-        self.money = 0
+        self.money = 50
+        self.karma = 50
+        self.power = 50
+        self.atractive = 50
         self.attack = 5
         self.effects = []
         self.cnt = 1

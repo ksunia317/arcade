@@ -1,11 +1,14 @@
 import random
 
 
-def get_effect(x, ef, message):
-    x.effects.append(ef)
-    status = CARDS["status"]
-    status["top_text"] = message
-    x.rooms[-1]["card"] = status
+def change_p(x, karma=0, money=0, power=0, atr=0):
+    x.karma += karma
+    x.money += money
+    x.power += power
+    x.atractive += atr
+
+
+path = "assets/"
 
 
 def open_card(x, card):
@@ -30,7 +33,31 @@ def another_one(x):
     x.cnt += 1
 
 
-path = "assets/"
+def mage_func(x, color):
+    if color == "blue":
+        change_p(x, atr=15)
+        status = CARDS["status"].copy()
+        status["top_text"] = "Ваше лицо стало привлекательнее"
+        open_card(x, status)
+    if color == "red":
+        change_p(x, power=15)
+        status = CARDS["status"].copy()
+        status["top_text"] = "Вас переполняет мощь"
+        status["texture"] = path + "items/scaled_x9/square_19_x5.png"
+        open_card(x, status)
+    if color == "yellow":
+        change_p(x, money=15)
+        status = CARDS["status"].copy()
+        status["top_text"] = "Кошелек тяжелеет"
+        status["texture"] = path + "items/scaled_x9/square_141_x5.png"
+        open_card(x, status)
+    if color == "green":
+        change_p(x, karma=15)
+        status = CARDS["status"].copy()
+        status["top_text"] = "Народ доволен"
+        open_card(x, status)
+
+
 example = {"border_color": (255, 255, 255),
            "background": (100, 100, 100),
            "text": "Пьяный Эльф",
@@ -51,15 +78,15 @@ STATUS_CARD["background"] = (61, 1, 29)
 STATUS_CARD["border_color"] = (45, 0, 21)
 CARDS["status"] = STATUS_CARD
 DOG_1 = dict(zip(list(example.keys()), [(152, 31, 0),
-                             (183, 162, 16),
-                             "СОБАКА",
-                             (0, 0, 0),
-                             path + "animals/scaled_x9/square_20_x5.png",
-                             1.5,
-                             ["Погладить", "Уйти"],
-                             pet,
-                             another_one,
-                             "Он хочет, чтобы его погладили..."]))
+                                        (183, 162, 16),
+                                        "СОБАКА",
+                                        (0, 0, 0),
+                                        path + "animals/scaled_x9/square_20_x5.png",
+                                        1.5,
+                                        ["Погладить", "Уйти"],
+                                        pet,
+                                        another_one,
+                                        "Он хочет, чтобы его погладили..."]))
 DOG_2 = DOG_1.copy()
 DOG_2["texture"] = path + "animals/scaled_x9/square_21_x5.png"
 CARDS["just_a_dogs"] = [DOG_1, DOG_2]
@@ -67,10 +94,14 @@ MAGE = example.copy()
 MAGE["texture"] = path + "rogues/scaled_x9/square_24_x5.png"
 MAGE["text"] = "КРУТОЙ МАГ"
 MAGE["top_text"] = "синий или красный?"
-MAGE["agree"] = lambda x: get_effect(x, "blue", "Что-то точно изменилось")
-MAGE["disagree"] = lambda x: get_effect(x, "red", "Что-то точно изменилось")
+MAGE["agree"] = lambda x: mage_func(x, "blue")
+MAGE["disagree"] = lambda x: mage_func(x, "red")
 MAGE['actions'] = ["Синий", "Красный"]
 MAGE["background"] = (68, 4, 206)
 MAGE["border_color"] = (46, 19, 104)
-CARDS["mage"] = [MAGE]
-CARDS[""]
+MAGE_2 = MAGE.copy()
+MAGE_2["top_text"] = "желтый или зеленый"
+MAGE_2["actions"] = ["Желтый", "Зеленый"]
+MAGE_2["agree"] = lambda x: mage_func(x, "yellow")
+MAGE_2["disagree"] = lambda x: mage_func(x, "green")
+CARDS["mage"] = [MAGE, MAGE_2]
