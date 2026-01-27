@@ -1,12 +1,7 @@
 import arcade
-import random
-
+from cards import CARDS
 
 level = 1
-# 0 - для текста
-# 1 - для рамок
-# 2 - для щаливки интерфейса
-# 3 - для кнопок действий
 colors = {
     1 :  [(255,152,27), (0, 50, 0), (0, 20, 0)]
 }
@@ -18,6 +13,13 @@ class Run(arcade.View):
         self.background_color = (0, 0, 0)
         self.selected_indx = 0
         self.selected = 0
+        self.karma = 100
+        self.health = 100
+        self.money = 0
+        self.attack = 5
+        self.effects = []
+        self.cnt = 1
+        
     
     def setup(self):
         self.generate_run()
@@ -32,11 +34,12 @@ class Run(arcade.View):
         arcade.draw_line(0, 250, 800, 250, colors[level][1], line_width=5)
         arcade.draw_line(0, 150, 800, 150, colors[level][1], line_width=5)
         arcade.draw_line(150, 150, 150, 0, colors[level][1], line_width=5)
+
         self.draw_room()
     
     def draw_room(self):
-        self.background_color = self.rooms[self.indx]["background"]
-        menu = self.rooms[self.indx]["actions"]
+        self.background_color = self.rooms[-1]["background"]
+        menu = self.rooms[-1]["card"]["actions"]
         arcade.draw_rect_outline(arcade.rect.XYWH(450, 200, 80, 80), colors[level][0])
         arcade.draw_text(menu[1],
                          450, 200,
@@ -53,7 +56,7 @@ class Run(arcade.View):
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
-        arcade.draw_text(self.rooms[-1]["text"],
+        arcade.draw_text(self.rooms[-1]["card"]["top_text"],
                          400, 800 - 30,
                          colors[level][0],
                          font_size=20,
@@ -84,17 +87,10 @@ class Run(arcade.View):
 
     def generate_run(self):
         self.rooms = []
-        data = {"card": {"border_color": (255, 255, 255),
-                         "background": (100, 100, 100),
-                         "text": "Пьяный Эльф",
-                         "text_color": (255, 255, 0),
-                         "texture": "assets/rogues/scaled_x9/square_1_x3.png"},
-                "actions": ["ДА", "Нет"],
+        data = {"card": CARDS["status"].copy(),
                 "background": (0, 0, 0),
-                "text": "Хочешь потусить?",
                 "text_color": (0, 0, 0)}
         self.rooms.append(data)
-        self.indx = 0
         return
 
     def draw_card(self):
@@ -105,7 +101,7 @@ class Run(arcade.View):
         arcade.draw_lrbt_rectangle_outline(275, 525,
                                            300, 700,
                                            card["border_color"],
-                                           border_width=5)
+                                           border_width=10)
         arcade.draw_text(card["text"],
                          (275 + 525) // 2, 700 - 20,
                          card["text_color"],
@@ -119,15 +115,16 @@ class Run(arcade.View):
         self.sprite.texture = texture
         self.sprite.center_x = 400
         self.sprite.center_y = 500
-        self.sprite.scale = 3.0
+        self.sprite.scale = card["scale"]
         arcade.draw_sprite(self.sprite)
+
     def agree(self):
         card = self.rooms[-1]["card"]
-        card["agree"]()
+        card["agree"](self)
     
     def disagree(self):
         card = self.rooms[-1]["card"]
-        card["disagree"]()
+        card["disagree"](self)
 
 
 def main():
