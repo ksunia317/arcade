@@ -2,7 +2,6 @@ import arcade
 import random
 from arcade.gui import *
 from arcade.camera import Camera2D
-from miniGames import MiniGamesView
 
 WIDTH = 800
 HEIGHT = 600
@@ -29,8 +28,9 @@ class PlatformJumperView(arcade.View):
         self.manager = UIManager()
         self.held_keys = []
         self.physics_engine = None
-        self.player_texture = "assets/yellowbird-upflap.png"
-        self.platform_texture = "assets/platform.png"
+        self.player_texture = "assets/minigames/jumper.png"
+        self.player_texture_flip = "assets/minigames/jumper_flip.png"
+        self.platform_texture = "assets/minigames/platform.png"
 
     def on_show_view(self):
         self.setup()
@@ -152,11 +152,15 @@ class PlatformJumperView(arcade.View):
             self.death_timer += delta_time
             return
 
-        self.physics_engine.update()
-        if arcade.key.LEFT in self.held_keys or arcade.key.A in self.held_keys:
+        if self.physics_engine:
+            self.physics_engine.update()
+
+        if arcade.key.LEFT in self.held_keys:
             self.player.change_x = -PLAYER_SPEED
-        elif arcade.key.RIGHT in self.held_keys or arcade.key.D in self.held_keys:
+            self.player.texture = arcade.load_texture(self.player_texture)
+        elif arcade.key.RIGHT in self.held_keys:
             self.player.change_x = PLAYER_SPEED
+            self.player.texture = arcade.load_texture(self.player_texture_flip)
         else:
             self.player.change_x = 0
 
@@ -185,8 +189,9 @@ class PlatformJumperView(arcade.View):
             self.game_over()
 
     def on_key_press(self, key, modifiers):
-        if key not in (
-        arcade.key.UP, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.ESCAPE):
+        if key not in (arcade.key.SPACE,
+                       arcade.key.UP, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT,
+                       arcade.key.ESCAPE):
             return
 
         if self.game_state == "playing":
@@ -255,5 +260,6 @@ class PlatformJumperView(arcade.View):
         self.held_keys.clear()
 
     def back_to_miniGames(self):
+        from miniGames import MiniGamesView
         miniGames_view = MiniGamesView()
         self.window.show_view(miniGames_view)

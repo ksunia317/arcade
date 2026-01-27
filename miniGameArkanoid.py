@@ -1,7 +1,6 @@
 import arcade
 import random
 from arcade.gui import *
-from miniGames import MiniGamesView
 
 WIDTH = 800
 HEIGHT = 600
@@ -26,7 +25,7 @@ class ArkanoidView(arcade.View):
         self.lives = LIVES
         self.manager = UIManager()
         self.held_keys = []
-        self.heart_texture = arcade.load_texture("assets/heart.png")
+        self.heart_texture = arcade.load_texture("assets/minigames/heart.png")
         self.bounce_sound = arcade.load_sound("sounds/bounce.mp3")
 
     def on_show_view(self):
@@ -207,7 +206,8 @@ class ArkanoidView(arcade.View):
         self.victory_anchor.visible = False
 
     def on_key_press(self, key, modifiers):
-        if key not in (arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.ESCAPE):
+        if key not in (
+        arcade.key.SPACE, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.ESCAPE):
             return
 
         if self.game_state == "playing":
@@ -255,5 +255,6 @@ class ArkanoidView(arcade.View):
         self.held_keys.clear()
 
     def back_to_miniGames(self):
+        from miniGames import MiniGamesView
         miniGames_view = MiniGamesView()
         self.window.show_view(miniGames_view)

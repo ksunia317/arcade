@@ -1,7 +1,6 @@
 import arcade
 import random
 from arcade.gui import *
-from miniGames import MiniGamesView
 
 PIPE_SPEED = -3
 PIPE_GAP = 200
@@ -24,7 +23,6 @@ class FlappyBirdView(arcade.View):
         self.pipe_timer = 0
         self.pipe_list = arcade.SpriteList()
         self.manager = UIManager()
-        self.jump_sound = arcade.load_sound("sounds/jump.mp3")
 
     def on_show_view(self):
         self.setup()
@@ -163,6 +161,7 @@ class FlappyBirdView(arcade.View):
         self.pause_anchor.visible = False
 
     def back_to_menu(self):
+        from miniGames import MiniGamesView
         miniGames_view = MiniGamesView()
         self.window.show_view(miniGames_view)
 
@@ -171,9 +170,9 @@ class Bird(arcade.Sprite):
     def __init__(self):
         super().__init__()
         self.textures = [
-            arcade.load_texture("assets/yellowbird-downflap.png"),
-            arcade.load_texture("assets/yellowbird-midflap.png"),
-            arcade.load_texture("assets/yellowbird-upflap.png")
+            arcade.load_texture("assets/minigames/yellowbird-downflap.png"),
+            arcade.load_texture("assets/minigames/yellowbird-midflap.png"),
+            arcade.load_texture("assets/minigames/yellowbird-upflap.png")
         ]
         self.texture = self.textures[0]
         self.scale = 1.0
@@ -212,7 +211,6 @@ class Bird(arcade.Sprite):
     def flap(self):
         if self.alive:
             self.velocity_y = FLAP_STRENGTH
-            arcade.play_sound(arcade.get_window().views[-1].jump_sound)
 
 
 class Pipe(arcade.Sprite):
@@ -227,8 +225,8 @@ class Pipe(arcade.Sprite):
 
 class PipePair:
     def __init__(self, x, window_height):
-        self.bottom_pipe = Pipe("assets/pipe-red.png", scale=1.0)
-        self.top_pipe = Pipe("assets/pipe-red.png", scale=1.0)
+        self.bottom_pipe = Pipe("assets/minigames/pipe-red.png", scale=1.0)
+        self.top_pipe = Pipe("assets/minigames/pipe-red.png", scale=1.0)
         bottom_height = random.randint(MIN_HEIGHT, MAX_HEIGHT)
         self.bottom_pipe.center_x = x
         self.bottom_pipe.center_y = bottom_height / 2
