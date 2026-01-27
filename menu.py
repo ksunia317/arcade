@@ -38,7 +38,6 @@ class MenuView(arcade.View):
         box_layout.add(title_label)
         buttons_data = [
             ("Играть", self.open_game),
-            ("Настройки", self.open_settings),
             ("Мини-игры", self.open_minigames)
         ]
         for text, func in buttons_data:
@@ -59,11 +58,10 @@ class MenuView(arcade.View):
 
     def open_game(self, event=None):
         from run import Run
+        self.window.set_size(800, 800)
         run_view = Run()
+        run_view.setup()
         self.window.show_view(run_view)
-
-    def open_settings(self, event=None):
-        pass
 
     def open_minigames(self, event=None):
         from miniGames import MiniGamesView
@@ -72,7 +70,7 @@ class MenuView(arcade.View):
 
 
 def main():
-    window = arcade.Window(WIDTH, HEIGHT, TITLE)
+    window = arcade.Window(WIDTH, HEIGHT, TITLE, resizable=True)
     menu_view = MenuView()
     window.show_view(menu_view)
     arcade.run()
