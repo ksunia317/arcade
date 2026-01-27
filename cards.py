@@ -1,11 +1,21 @@
 import random
 
 
+def claim_for_POP(x, money):
+    if (change_p(x, money)):
+        status = CARDS["status"].copy()
+        status["top_text"] = "Налог Уплачен, народ вас любит"
+        status["texture"] = path + "items/scaled_x9/square_141_x5.png"
+        status["text"] = "-20 денег"
+        open_card(x, status)
+
+
 def change_p(x, karma=0, money=0, power=0, atr=0):
     x.karma += karma
     x.money += money
     x.power += power
     x.atractive += atr
+    return True
 
 
 path = "assets/"
@@ -13,6 +23,11 @@ path = "assets/"
 
 def open_card(x, card):
     x.rooms[-1]["card"] = card.copy()
+
+
+def ANTI_POP_FUNC(x):
+    x.rooms[-1]["card"]["top_text"] = "Ну пожалуйста..."
+    x.rooms[-1]["card"]["agree"] = lambda x: another_one(x)
 
 
 def pet(x):
@@ -27,8 +42,8 @@ def pet(x):
 def another_one(x):
     maybe = []
     maybe.extend(CARDS["just_a_dogs"])
-    if ("blue" not in x.effects and "red" not in x.effects):
-        maybe.extend(CARDS["mage"])
+    maybe.extend(CARDS["mage"])
+    maybe.append(CARDS["pop"])
     x.rooms[-1]['card'] = random.choice(maybe).copy()
     x.cnt += 1
 
@@ -105,3 +120,19 @@ MAGE_2["actions"] = ["Желтый", "Зеленый"]
 MAGE_2["agree"] = lambda x: mage_func(x, "yellow")
 MAGE_2["disagree"] = lambda x: mage_func(x, "green")
 CARDS["mage"] = [MAGE, MAGE_2]
+POP = example.copy()
+POP["texture"] = path + "rogues/scaled_x9/square_11_x5.png"
+POP["text"] = "Священник"
+POP["top_text"] = "Налог на церковь?"
+POP["actions"] = ["НЕТ", "Ладно(20)"]
+POP["disagree"] = lambda x: claim_for_POP(x, -20)
+POP["agree"] = lambda x: open_card(x, CARDS["antipop"])
+CARDS["pop"] = POP
+ANTI_POP = example.copy()
+ANTI_POP["text"] = "Анти священник"
+ANTI_POP["top_text"] = "может тогда в мою?"
+ANTI_POP["actions"] = ["НЕЕЕЕТ", "Ладно(20)"]
+ANTI_POP["disagree"] = lambda x: claim_for_POP(x, -20)
+ANTI_POP["agree"] = lambda x: ANTI_POP_FUNC(x)
+ANTI_POP["texture"] = path + "rogues/scaled_x9/square_15_x5.png"
+CARDS["antipop"] = ANTI_POP
