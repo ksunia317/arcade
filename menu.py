@@ -1,5 +1,5 @@
 import arcade
-from arcade.gui import *
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIFlatButton
 
 WIDTH = 800
 HEIGHT = 600
@@ -30,14 +30,12 @@ class MenuView(arcade.View):
         box_layout = UIBoxLayout(vertical=True, space_between=10)
         title_label = UILabel(text="CardMan", width=300, height=100, font_size=56, text_color=COLOR_RED_WINE)
         box_layout.add(title_label)
-
         buttons_data = [
             ("Играть", self.open_game),
             ("Настройки", self.open_settings),
             ("Правила", self.open_rules),
             ("Мини-игры", self.open_minigames)
         ]
-
         for text, func in buttons_data:
             button = UIFlatButton(width=200, height=50, text=text)
             button.style = {
@@ -46,7 +44,6 @@ class MenuView(arcade.View):
                 "press": UIFlatButton.UIStyle(bg=COLOR_RED_WINE, border=None, font_color=COLOR_SILVER)}
             button.on_click = func
             box_layout.add(button)
-
         anchor_layout.add(child=box_layout, anchor_x="center_x", anchor_y="center_y")
         self.manager.add(anchor_layout)
 

@@ -1,5 +1,5 @@
 import arcade
-from arcade.gui import *
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIFlatButton, UITextureButton
 
 WIDTH = 800
 HEIGHT = 600
@@ -29,13 +29,10 @@ class MiniGamesView(arcade.View):
         box_layout = UIBoxLayout(vertical=True, space_between=10)
         title_label = UILabel(text="Мини-игры", width=300, height=100, font_size=56, text_color=COLOR_RED_WINE)
         box_layout.add(title_label)
-
         buttons_data = [
             ('Flappy Bird', self.flap_game_open),
             ('Platform Jumper', self.jump_game_open),
-            ('Arkanoid', self.arkanoid_game_open)
-        ]
-
+            ('Arkanoid', self.arkanoid_game_open)]
         for text, func in buttons_data:
             button = UIFlatButton(width=200, height=50, text=text)
             button.style = {
@@ -44,10 +41,8 @@ class MiniGamesView(arcade.View):
                 "press": UIFlatButton.UIStyle(bg=COLOR_RED_WINE, border=None, font_color=COLOR_SILVER)}
             button.on_click = func
             box_layout.add(button)
-
         anchor_layout.add(child=box_layout, anchor_x="center_x", anchor_y="center_y")
         self.manager.add(anchor_layout)
-
         exit_texture = arcade.load_texture("assets/buttons/exit_button.png")
         exit_button = UITextureButton(texture=exit_texture, width=50, height=50)
         exit_button.on_click = self.back_to_menu

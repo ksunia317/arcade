@@ -1,6 +1,6 @@
 import arcade
 import random
-from arcade.gui import *
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel
 from arcade.camera import Camera2D
 
 WIDTH = 800
@@ -50,8 +50,7 @@ class PlatformJumperView(arcade.View):
         self.init_platforms()
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player, self.platform_list, gravity_constant=GRAVITY,
-            ladders=None, walls=self.platform_list
-        )
+            ladders=None, walls=self.platform_list)
         self.setup_widgets()
 
     def init_platforms(self):
@@ -95,10 +94,8 @@ class PlatformJumperView(arcade.View):
     def setup_widgets(self):
         self.score_label = UILabel(
             text=f"Высота: {int(self.player.center_y)}", x=20, y=HEIGHT - 40,
-            width=200, height=30, font_size=20, text_color=arcade.color.BLACK
-        )
+            width=200, height=30, font_size=20, text_color=arcade.color.BLACK)
         self.manager.add(self.score_label)
-
         self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
         pause_label = UILabel(text="ПАУЗА", width=300, height=60, font_size=40, text_color=arcade.color.RED,
                               align="center")
@@ -113,7 +110,6 @@ class PlatformJumperView(arcade.View):
         self.pause_anchor.add(child=self.pause_panel, anchor_x="center", anchor_y="center")
         self.pause_anchor.visible = False
         self.manager.add(self.pause_anchor)
-
         self.game_over_panel = UIBoxLayout(vertical=True, space_between=20)
         game_over_label = UILabel(text="GAME OVER", width=400, height=80, font_size=50, text_color=arcade.color.RED,
                                   align="center")
@@ -137,12 +133,12 @@ class PlatformJumperView(arcade.View):
         camera_y = self.camera.position[1]
         camera_bottom = camera_y - HEIGHT // 2
         sky_start_y = (camera_bottom // SKY_TEXTURE_HEIGHT) * SKY_TEXTURE_HEIGHT
-        for y_offset in range(0, HEIGHT + SKY_TEXTURE_HEIGHT, SKY_TEXTURE_HEIGHT):
-            sky_y = sky_start_y + y_offset + SKY_TEXTURE_HEIGHT // 2
-            self.camera.use()
-            arcade.draw_texture_rect(self.texture, arcade.rect.XYWH(WIDTH // 2, sky_y, WIDTH, SKY_TEXTURE_HEIGHT))
-        self.platform_list.draw()
-        self.player_list.draw()
+        with self.camera.activate():
+            for y_offset in range(0, HEIGHT + SKY_TEXTURE_HEIGHT, SKY_TEXTURE_HEIGHT):
+                sky_y = sky_start_y + y_offset + SKY_TEXTURE_HEIGHT // 2
+                arcade.draw_texture_rect(self.texture, arcade.rect.XYWH(WIDTH // 2, sky_y, WIDTH, SKY_TEXTURE_HEIGHT))
+            self.platform_list.draw()
+            self.player_list.draw()
         self.manager.draw()
 
     def on_update(self, delta_time):
@@ -151,10 +147,8 @@ class PlatformJumperView(arcade.View):
         if self.game_state == "game_over":
             self.death_timer += delta_time
             return
-
         if self.physics_engine:
             self.physics_engine.update()
-
         if arcade.key.LEFT in self.held_keys:
             self.player.change_x = -PLAYER_SPEED
             self.player.texture = arcade.load_texture(self.player_texture)
@@ -163,28 +157,22 @@ class PlatformJumperView(arcade.View):
             self.player.texture = arcade.load_texture(self.player_texture_flip)
         else:
             self.player.change_x = 0
-
         camera_bottom = self.camera.position[1] - HEIGHT // 2
         for platform in self.platform_list[:]:
             if platform.top < camera_bottom - 100:
                 self.platform_list.remove(platform)
-
         camera_top = self.camera.position[1] + HEIGHT // 2
         highest_platform = max([p.center_y for p in self.platform_list], default=0)
         if highest_platform < camera_top + 300:
             self.add_platform(highest_platform + random.randint(MIN_PLATFORM_GAP, MAX_PLATFORM_GAP))
-
         if self.physics_engine:
             self.physics_engine.walls = self.platform_list
-
         target_y = self.player.center_y
         current_y = self.camera.position[1]
         new_y = current_y + (target_y - current_y) * CAMERA_SPEED * delta_time
         self.camera.position = (WIDTH // 2, new_y)
-
         self.score = max(self.score, int(self.player.center_y))
         self.score_label.text = f"Высота: {self.score}"
-
         if self.player.top < camera_bottom - 50:
             self.game_over()
 
@@ -193,7 +181,6 @@ class PlatformJumperView(arcade.View):
                        arcade.key.UP, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT,
                        arcade.key.ESCAPE):
             return
-
         if self.game_state == "playing":
             if key == arcade.key.UP:
                 if self.physics_engine.can_jump():
@@ -228,7 +215,6 @@ class PlatformJumperView(arcade.View):
     def on_key_release(self, key, modifiers):
         if key not in (arcade.key.LEFT, arcade.key.RIGHT):
             return
-
         if key in self.held_keys:
             self.held_keys.remove(key)
             if not (arcade.key.LEFT in self.held_keys or arcade.key.RIGHT in self.held_keys):
@@ -250,8 +236,7 @@ class PlatformJumperView(arcade.View):
         self.init_platforms()
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player, self.platform_list, gravity_constant=GRAVITY,
-            ladders=None, walls=self.platform_list
-        )
+            ladders=None, walls=self.platform_list)
         self.camera.position = (WIDTH // 2, HEIGHT // 2)
         self.score_label.text = f"Высота: {self.score}"
         self.score_display.text = f"Высота: {self.score}"

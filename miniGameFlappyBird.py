@@ -1,6 +1,6 @@
 import arcade
 import random
-from arcade.gui import *
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel
 
 PIPE_SPEED = -3
 PIPE_GAP = 200
@@ -41,10 +41,8 @@ class FlappyBirdView(arcade.View):
     def setup_widgets(self):
         self.score_label = UILabel(
             text=f"Счёт: {self.score}", x=20, y=HEIGHT - 40,
-            width=200, height=30, font_size=20, text_color=arcade.color.WHITE
-        )
+            width=200, height=30, font_size=20, text_color=arcade.color.WHITE)
         self.manager.add(self.score_label)
-
         self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
         pause_label = UILabel(text="ПАУЗА", width=300, height=60, font_size=40, text_color=arcade.color.RED,
                               align="center")
@@ -59,7 +57,6 @@ class FlappyBirdView(arcade.View):
         self.pause_anchor.add(child=self.pause_panel, anchor_x="center", anchor_y="center")
         self.pause_anchor.visible = False
         self.manager.add(self.pause_anchor)
-
         self.game_over_panel = UIBoxLayout(vertical=True, space_between=20)
         game_over_label = UILabel(text="GAME OVER", width=400, height=80, font_size=50, text_color=arcade.color.RED,
                                   align="center")
@@ -88,12 +85,10 @@ class FlappyBirdView(arcade.View):
     def on_update(self, delta_time):
         if self.game_state == "paused":
             return
-
         self.bird.update()
         if self.game_state == "game_over":
             self.death_timer += delta_time
             return
-
         self.pipe_timer += delta_time
         if self.pipe_timer > 2.0:
             pipe_pair = PipePair(WIDTH + 100, HEIGHT)
@@ -101,7 +96,6 @@ class FlappyBirdView(arcade.View):
             self.pipe_list.append(pipe_pair.bottom_pipe)
             self.pipe_list.append(pipe_pair.top_pipe)
             self.pipe_timer = 0
-
         for pipe_pair in self.pipes[:]:
             pipe_pair.update()
             if pipe_pair.check():
@@ -112,7 +106,6 @@ class FlappyBirdView(arcade.View):
                 pipe_pair.scored = True
                 self.score += 1
                 self.score_label.text = f"Счёт: {self.score}"
-
         if arcade.check_for_collision_with_list(self.bird, self.pipe_list):
             self.bird.alive = False
             self.game_state = "game_over"
@@ -123,7 +116,6 @@ class FlappyBirdView(arcade.View):
     def on_key_press(self, key, modifiers):
         if key not in (arcade.key.SPACE, arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.ESCAPE):
             return
-
         if self.game_state == "playing":
             if key == arcade.key.SPACE:
                 self.bird.flap()
@@ -191,7 +183,6 @@ class Bird(arcade.Sprite):
         else:
             self.velocity_y += GRAVITY
             self.animating = True
-
         self.center_y += self.velocity_y
 
         if self.animating:

@@ -1,6 +1,6 @@
 import arcade
 import random
-from arcade.gui import *
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel
 
 WIDTH = 800
 HEIGHT = 600
@@ -56,10 +56,8 @@ class ArkanoidView(arcade.View):
     def setup_widgets(self):
         self.score_label = UILabel(
             text=f"Счёт: {self.score}", x=20, y=HEIGHT - 40,
-            width=200, height=30, font_size=20, text_color=arcade.color.WHITE
-        )
+            width=200, height=30, font_size=20, text_color=arcade.color.WHITE)
         self.manager.add(self.score_label)
-
         self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
         pause_label = UILabel(text="ПАУЗА", width=300, height=60, font_size=40, text_color=arcade.color.RED,
                               align="center")
@@ -74,7 +72,6 @@ class ArkanoidView(arcade.View):
         self.pause_anchor.add(child=self.pause_panel, anchor_x="center", anchor_y="center")
         self.pause_anchor.visible = False
         self.manager.add(self.pause_anchor)
-
         self.game_over_panel = UIBoxLayout(vertical=True, space_between=20)
         game_over_label = UILabel(text="GAME OVER", width=400, height=80, font_size=50, text_color=arcade.color.RED,
                                   align="center")
@@ -92,7 +89,6 @@ class ArkanoidView(arcade.View):
         self.game_over_anchor.add(child=self.game_over_panel, anchor_x="center", anchor_y="center")
         self.game_over_anchor.visible = False
         self.manager.add(self.game_over_anchor)
-
         self.victory_panel = UIBoxLayout(vertical=True, space_between=20)
         victory_label = UILabel(text="ПОБЕДА!", width=400, height=80, font_size=50, text_color=arcade.color.GREEN,
                                 align="center")
@@ -129,15 +125,12 @@ class ArkanoidView(arcade.View):
     def on_update(self, delta_time):
         if self.game_state != "playing":
             return
-
         if arcade.key.LEFT in self.held_keys:
             self.paddle.center_x = max(self.paddle.width // 2, self.paddle.center_x - PADDLE_SPEED)
         elif arcade.key.RIGHT in self.held_keys:
             self.paddle.center_x = min(WIDTH - self.paddle.width // 2, self.paddle.center_x + PADDLE_SPEED)
-
         self.ball.center_x += self.ball.change_x
         self.ball.center_y += self.ball.change_y
-
         if self.ball.left <= 0 or self.ball.right >= WIDTH:
             self.ball.change_x *= -1
             self.ball.center_x = max(BALL_RADIUS, min(WIDTH - BALL_RADIUS, self.ball.center_x))
@@ -146,14 +139,12 @@ class ArkanoidView(arcade.View):
             self.ball.change_y *= -1
             self.ball.center_y = min(HEIGHT - BALL_RADIUS, self.ball.center_y)
             arcade.play_sound(self.bounce_sound)
-
         if arcade.check_for_collision(self.ball, self.paddle):
             relative_x = (self.ball.center_x - self.paddle.center_x) / (self.paddle.width // 2)
             self.ball.change_x = relative_x * BALL_SPEED
             self.ball.change_y = abs(self.ball.change_y)
             self.ball.center_y = self.paddle.top + BALL_RADIUS
             arcade.play_sound(self.bounce_sound)
-
         brick_hit_list = arcade.check_for_collision_with_list(self.ball, self.brick_list)
         for brick in brick_hit_list:
             brick.remove_from_sprite_lists()
@@ -164,14 +155,12 @@ class ArkanoidView(arcade.View):
             else:
                 self.ball.change_y *= -1
             arcade.play_sound(self.bounce_sound)
-
         if self.ball.bottom <= 0:
             self.lives -= 1
             if self.lives <= 0:
                 self.game_over()
             else:
                 self.respawn_ball()
-
         if len(self.brick_list) == 0:
             self.victory()
 
@@ -207,9 +196,9 @@ class ArkanoidView(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key not in (
-        arcade.key.SPACE, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.ESCAPE):
+                arcade.key.SPACE, arcade.key.LEFT, arcade.key.RIGHT, arcade.key.LSHIFT, arcade.key.RSHIFT,
+                arcade.key.ESCAPE):
             return
-
         if self.game_state == "playing":
             if key == arcade.key.LSHIFT or key == arcade.key.RSHIFT:
                 self.game_state = "paused"
