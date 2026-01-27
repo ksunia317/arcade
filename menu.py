@@ -7,7 +7,7 @@ TITLE = "CardMan"
 
 COLOR_PARCHMENT = (245, 235, 220)
 COLOR_DARK_OAK = (89, 66, 41)
-COLOR_RED_WINE = (109, 26, 44)
+COLOR_OCHRE = (184, 130, 36)
 COLOR_GOLD = (212, 175, 55)
 COLOR_SILVER = (192, 192, 192)
 
@@ -17,6 +17,11 @@ class MenuView(arcade.View):
         super().__init__()
         self.background_color = COLOR_PARCHMENT
         self.manager = UIManager()
+        self.setup()
+
+    def setup(self):
+        self.texture = arcade.load_texture("images/menu_backgroud.png")
+        print(self.texture)
 
     def on_show_view(self):
         self.manager.enable()
@@ -28,7 +33,8 @@ class MenuView(arcade.View):
     def setup_widgets(self):
         anchor_layout = UIAnchorLayout()
         box_layout = UIBoxLayout(vertical=True, space_between=10)
-        title_label = UILabel(text="CardMan", width=300, height=100, font_size=56, text_color=COLOR_RED_WINE)
+        title_label = UILabel(text="CardMan", width=300, height=100, font_size=56, text_color=COLOR_PARCHMENT,
+                              bold=True)
         box_layout.add(title_label)
         buttons_data = [
             ("Играть", self.open_game),
@@ -40,7 +46,7 @@ class MenuView(arcade.View):
             button.style = {
                 "normal": UIFlatButton.UIStyle(bg=COLOR_DARK_OAK, border=None, font_color=COLOR_GOLD),
                 "hover": UIFlatButton.UIStyle(bg=COLOR_GOLD, border=None, font_color=COLOR_DARK_OAK),
-                "press": UIFlatButton.UIStyle(bg=COLOR_RED_WINE, border=None, font_color=COLOR_SILVER)}
+                "press": UIFlatButton.UIStyle(bg=COLOR_OCHRE, border=None, font_color=COLOR_SILVER)}
             button.on_click = func
             box_layout.add(button)
         anchor_layout.add(child=box_layout, anchor_x="center_x", anchor_y="center_y")
@@ -48,6 +54,7 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         self.clear()
+        arcade.draw_texture_rect(self.texture, arcade.rect.XYWH(WIDTH // 2, HEIGHT // 2, WIDTH, HEIGHT))
         self.manager.draw()
 
     def open_game(self, event=None):

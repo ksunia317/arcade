@@ -172,7 +172,7 @@ class PlatformJumperView(arcade.View):
         new_y = current_y + (target_y - current_y) * CAMERA_SPEED * delta_time
         self.camera.position = (WIDTH // 2, new_y)
         self.score = max(self.score, int(self.player.center_y))
-        self.score_label.text = f"Высота: {self.score}"
+        self.score_label.text = f"Высота: {self.score - 149}"
         if self.player.top < camera_bottom - 50:
             self.game_over()
 
@@ -208,7 +208,7 @@ class PlatformJumperView(arcade.View):
 
     def game_over(self):
         self.game_state = "game_over"
-        self.score_display.text = f"Высота: {self.score}"
+        self.score_display.text = f"Высота: {self.score - 149}"
         self.game_over_anchor.visible = True
         self.pause_anchor.visible = False
 
@@ -238,8 +238,8 @@ class PlatformJumperView(arcade.View):
             self.player, self.platform_list, gravity_constant=GRAVITY,
             ladders=None, walls=self.platform_list)
         self.camera.position = (WIDTH // 2, HEIGHT // 2)
-        self.score_label.text = f"Высота: {self.score}"
-        self.score_display.text = f"Высота: {self.score}"
+        self.score_label.text = f"Высота: {self.score - 149}"
+        self.score_display.text = f"Высота: {self.score - 149}"
         self.game_over_anchor.visible = False
         self.pause_anchor.visible = False
         self.held_keys.clear()

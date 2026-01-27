@@ -8,8 +8,8 @@ BRICK_WIDTH = 60
 BRICK_HEIGHT = 20
 BRICK_ROWS = 5
 BRICK_COLS = 12
-PADDLE_WIDTH = 100
-PADDLE_HEIGHT = 15
+PADDLE_WIDTH = 150
+PADDLE_HEIGHT = 30
 BALL_RADIUS = 10
 BALL_SPEED = 5
 PADDLE_SPEED = 8
@@ -37,12 +37,12 @@ class ArkanoidView(arcade.View):
 
     def setup(self):
         self.background_texture = arcade.load_texture("images/miniGames_background_Arkanoid.png")
-        self.paddle = arcade.SpriteSolidColor(PADDLE_WIDTH, PADDLE_HEIGHT, arcade.color.WHITE)
+        self.create_paddle()
         self.paddle.center_x = WIDTH // 2
         self.paddle.center_y = 50
         self.paddle_list = arcade.SpriteList()
         self.paddle_list.append(self.paddle)
-        self.ball = arcade.SpriteCircle(BALL_RADIUS, arcade.color.WHITE)
+        self.ball = arcade.SpriteCircle(BALL_RADIUS, arcade.color.YELLOW_ROSE)
         self.ball.center_x = WIDTH // 2
         self.ball.center_y = HEIGHT // 2
         self.ball.change_x = random.choice([-1, 1]) * BALL_SPEED
@@ -53,13 +53,20 @@ class ArkanoidView(arcade.View):
         self.generate_bricks()
         self.setup_widgets()
 
+    def create_paddle(self):
+        self.paddle = arcade.Sprite("assets/minigames/platform.png")
+        self.paddle.width = PADDLE_WIDTH
+        self.paddle.height = PADDLE_HEIGHT
+        self.paddle.center_x = WIDTH // 2
+        self.paddle.center_y = 50
+
     def setup_widgets(self):
         self.score_label = UILabel(
             text=f"Счёт: {self.score}", x=20, y=HEIGHT - 40,
             width=200, height=30, font_size=20, text_color=arcade.color.WHITE)
         self.manager.add(self.score_label)
         self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
-        pause_label = UILabel(text="ПАУЗА", width=300, height=60, font_size=40, text_color=arcade.color.RED,
+        pause_label = UILabel(text="ПАУЗА", width=300, height=60, font_size=40, text_color=arcade.color.WHITE,
                               align="center")
         self.pause_panel.add(pause_label)
         continue_label = UILabel(text="Shift - продолжить", width=300, height=30, font_size=18,
@@ -229,6 +236,7 @@ class ArkanoidView(arcade.View):
 
     def restart_game(self):
         self.game_state = "playing"
+        self.create_paddle()
         self.score = 0
         self.lives = LIVES
         self.paddle.center_x = WIDTH // 2
