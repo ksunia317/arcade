@@ -2,6 +2,15 @@ import random
 from json import dump, loads
 
 
+def figth(x, power):
+    n = random.randint(0, x.power + power)
+    if n >= 0 and n <= x.power:
+        change_p(x, power=10)
+        another_one(x)
+    else:
+        change_p(x, power=-1000)
+
+
 def claim_for_POP(x, money):
     if (change_p(x, money=money)):
         status = CARDS["status"].copy()
@@ -39,6 +48,9 @@ def change_p(x, karma=0, money=0, power=0, atr=0):
         f = 1
     elif x.atractive > 100:
         status["top_text"] = "Вы были слишком красивы для мира сего"
+        f = 1
+    elif power < 0:
+        status["top_text"] = "Недостаток силы"
         f = 1
     if (f):
         status["text"] = f"СЧЕТ: {x.cnt}"
@@ -83,6 +95,7 @@ def another_one(x):
     maybe.extend(CARDS["just_a_dogs"])
     maybe.extend(CARDS["mage"])
     maybe.append(CARDS["pop"])
+    maybe.append(CARDS["thief"])
     x.rooms[-1]['card'] = random.choice(maybe).copy()
     x.cnt += 1
 
@@ -179,3 +192,12 @@ CARDS["antipop"] = ANTI_POP
 
 def exit_func(x):
     x.reset()
+
+
+THIEF = example.copy()
+THIEF["text"] = "Разбойник"
+THIEF["top_text"] = "Ты будешь легкой добычей)"
+THIEF["texture"] = path + "rogues/scaled_x9/square_3_x5.png"
+THIEF["actions"] = ["Бежать", "Сражаться"]
+THIEF["disagree"] = lambda x: figth(x, 80)
+CARDS["thief"] = THIEF
