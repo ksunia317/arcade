@@ -96,7 +96,14 @@ def another_one(x):
     maybe.extend(CARDS["mage"])
     maybe.append(CARDS["pop"])
     maybe.append(CARDS["thief"])
-    x.rooms[-1]['card'] = random.choice(maybe).copy()
+    maybe.append(CARDS["lost_money"])
+    if (x.cnt == 19):
+        x.level += 1
+        status = CARDS["status"].copy()
+        status["top_text"] = "ВЫ ПЕРЕШЛИ НА НОВЫЙ УРОВЕНЬ"
+        open_card(x, status)
+    else:
+        x.rooms[-1]['card'] = random.choice(maybe).copy()
     x.cnt += 1
 
 
@@ -201,3 +208,20 @@ THIEF["texture"] = path + "rogues/scaled_x9/square_3_x5.png"
 THIEF["actions"] = ["Бежать", "Сражаться"]
 THIEF["disagree"] = lambda x: figth(x, 80)
 CARDS["thief"] = THIEF
+LOST_MONEY = example.copy()
+LOST_MONEY["text"] = "чьи-то денги"
+LOST_MONEY["top_text"] = "Что упало, то пропало, так ведь?"
+LOST_MONEY["texture"] = path + "items/scaled_x9/square_142_x5.png"
+LOST_MONEY["actions"] = ["Уйти", "Взять"]
+LOST_MONEY["disagree"] = lambda x: bring_lost_money(x)
+
+
+def bring_lost_money(x):
+    if (change_p(x, karma=-10, money=20)):
+        status = CARDS["status"].copy()
+        status["top_text"] = "Вам очень стыдно"
+        status["text"] = "+20 денег"
+        open_card(x, status)
+
+
+CARDS["lost_money"] = LOST_MONEY
