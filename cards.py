@@ -100,6 +100,7 @@ def another_one(x):
     maybe.append(CARDS["merchant"])
     maybe.append(CARDS["pilgrim"])
     maybe.append(CARDS["artifact"])
+    maybe.append(CARDS["altar"])
     if (x.cnt == 19):
         x.level += 1
         status = CARDS["status"].copy()
@@ -307,3 +308,38 @@ def artifact_leave(x):
 ARTIFACT["agree"] = artifact_activate
 ARTIFACT["disagree"] = artifact_leave
 CARDS["artifact"] = ARTIFACT
+ALTAR = example.copy()
+ALTAR["text"] = "Алтарь искупления"
+ALTAR["top_text"] = "Древний камень впитывает энергию. И не знает, что дает"
+ALTAR["texture"] = path + "items/scaled_x9/square_105_x5.png"
+ALTAR["actions"] = ["Активировать", "Уйти"]
+ALTAR["background"] = (100, 80, 120)
+ALTAR["border_color"] = (140, 110, 160)
+
+
+def altar_sacrifice(x):
+    if x.power < 20:
+        status = CARDS["status"].copy()
+        status["top_text"] = "У вас недостаточно силы для жертвоприношения."
+        status["text"] = "Попробуйте позже"
+        open_card(x, status)
+        return
+    
+    if change_p(x, power=-20, karma=30):
+        status = CARDS["status"].copy()
+        status["top_text"] = "Народ благодарит вас за жертву! Ваша мудрость признана."
+        status["texture"] = path + "items/scaled_x9/square_106_x5.png"
+        status["text"] = "+30 кармы, -20 силы"
+        open_card(x, status)
+
+
+def altar_leave(x):
+    status = CARDS["status"].copy()
+    status["top_text"] = "Вы решили не жертвовать силой."
+    status["text"] = "Ничего не произошло"
+    open_card(x, status)
+
+
+ALTAR["agree"] = altar_sacrifice
+ALTAR["disagree"] = altar_leave
+CARDS["altar"] = ALTAR
