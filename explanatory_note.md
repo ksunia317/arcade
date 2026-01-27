@@ -7,12 +7,12 @@
 
 ### Основные модули:
 
-1. **main.py** - Главный файл запуска приложения
 2. **menu.py** - Реализация главного меню
 3. **miniGames.py** - Меню выбора мини-игр
 4. **miniGameFlappyBird.py** - Мини-игра Flappy Bird
 5. **miniGamePlatformJumper.py** - Мини-игра Platform Jumper
 6. **miniGameArkanoid.py** - Мини-игра Arkanoid
+6. **run.py** - игра КАРТЕЖНИК
 
 ## Реализованные функции
 
@@ -25,6 +25,7 @@
   - Flappy Bird
   - Platform Jumper
   - Arkanoid
+  - КАРТЕЖНИК
 - **Кнопка выхода**: В главное меню (с текстурой кнопки)
 
 ### 3. Мини-игры

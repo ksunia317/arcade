@@ -1,9 +1,10 @@
 import arcade
 from cards import CARDS
 
-level = 1
+
 colors = {
-    1 :  [(255,152,27), (0, 50, 0), (0, 20, 0)]
+    1 :  [(255,152,27), (0, 50, 0), (0, 20, 0)],
+    2 :  [(100,152,27), (50, 0, 0), (20, 0, 0)]
 }
 
 
@@ -20,7 +21,7 @@ class Run(arcade.View):
         self.attack = 5
         self.effects = []
         self.cnt = 1
-        
+        self.level = 1
     
     def setup(self):
         self.generate_run()
@@ -31,41 +32,41 @@ class Run(arcade.View):
         self.draw_UI()
     
     def draw_UI(self):
-        arcade.draw_lrbt_rectangle_filled(0, 800, 0, 250, colors[level][2])
-        arcade.draw_line(0, 250, 800, 250, colors[level][1], line_width=5)
-        arcade.draw_line(0, 150, 800, 150, colors[level][1], line_width=5)
-        arcade.draw_line(150, 150, 150, 0, colors[level][1], line_width=5)
+        arcade.draw_lrbt_rectangle_filled(0, 800, 0, 250, colors[self.level][2])
+        arcade.draw_line(0, 250, 800, 250, colors[self.level][1], line_width=5)
+        arcade.draw_line(0, 150, 800, 150, colors[self.level][1], line_width=5)
+        arcade.draw_line(150, 150, 150, 0, colors[self.level][1], line_width=5)
         arcade.draw_text(str(self.cnt),
                          65, 75,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=40,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         arcade.draw_text(str(self.karma),
                          200, 75,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=40,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         arcade.draw_text(str(self.money),
                          300, 75,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=40,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         arcade.draw_text(str(self.atractive),
                          400, 75,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=40,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         arcade.draw_text(str(self.power),
                          500, 75,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=40,
                          anchor_x="center",
                          anchor_y="center",
@@ -75,35 +76,35 @@ class Run(arcade.View):
     def draw_room(self):
         self.background_color = self.rooms[-1]["background"]
         menu = self.rooms[-1]["card"]["actions"]
-        arcade.draw_rect_outline(arcade.rect.XYWH(450, 200, 80, 80), colors[level][0])
+        arcade.draw_rect_outline(arcade.rect.XYWH(450, 200, 80, 80), colors[self.level][0])
         arcade.draw_text(menu[1],
                          450, 200,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=12,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
-        arcade.draw_rect_outline(arcade.rect.XYWH(350, 200, 80, 80), colors[level][0])
+        arcade.draw_rect_outline(arcade.rect.XYWH(350, 200, 80, 80), colors[self.level][0])
         arcade.draw_text(menu[0],
                          350, 200,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=12,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         arcade.draw_text(self.rooms[-1]["card"]["top_text"],
                          400, 800 - 30,
-                         colors[level][0],
+                         colors[self.level][0],
                          font_size=20,
                          anchor_x="center",
                          anchor_y="center",
                          rotation=0)
         self.draw_card()
         if self.selected == 2:
-            arcade.draw_rect_filled(arcade.rect.XYWH(450, 200, 80, 80), colors[level][0])
+            arcade.draw_rect_filled(arcade.rect.XYWH(450, 200, 80, 80), colors[self.level][0])
             self.disagree()
         elif self.selected == 1:
-            arcade.draw_rect_filled(arcade.rect.XYWH(350, 200, 80, 80), colors[level][0])
+            arcade.draw_rect_filled(arcade.rect.XYWH(350, 200, 80, 80), colors[self.level][0])
             self.agree()
         self.selected = 0
 
