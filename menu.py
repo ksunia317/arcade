@@ -33,7 +33,6 @@ class MenuView(arcade.View):
         buttons_data = [
             ("Играть", self.open_game),
             ("Настройки", self.open_settings),
-            ("Правила", self.open_rules),
             ("Мини-игры", self.open_minigames)
         ]
         for text, func in buttons_data:
@@ -52,12 +51,11 @@ class MenuView(arcade.View):
         self.manager.draw()
 
     def open_game(self, event=None):
-        pass
+        from run import Run
+        run_view = Run()
+        self.window.show_view(run_view)
 
     def open_settings(self, event=None):
-        pass
-
-    def open_rules(self, event=None):
         pass
 
     def open_minigames(self, event=None):
