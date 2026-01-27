@@ -35,7 +35,41 @@ class Run(arcade.View):
         arcade.draw_line(0, 250, 800, 250, colors[level][1], line_width=5)
         arcade.draw_line(0, 150, 800, 150, colors[level][1], line_width=5)
         arcade.draw_line(150, 150, 150, 0, colors[level][1], line_width=5)
-
+        arcade.draw_text(str(self.cnt),
+                         65, 75,
+                         colors[level][0],
+                         font_size=40,
+                         anchor_x="center",
+                         anchor_y="center",
+                         rotation=0)
+        arcade.draw_text(str(self.karma),
+                         200, 75,
+                         colors[level][0],
+                         font_size=40,
+                         anchor_x="center",
+                         anchor_y="center",
+                         rotation=0)
+        arcade.draw_text(str(self.money),
+                         300, 75,
+                         colors[level][0],
+                         font_size=40,
+                         anchor_x="center",
+                         anchor_y="center",
+                         rotation=0)
+        arcade.draw_text(str(self.atractive),
+                         400, 75,
+                         colors[level][0],
+                         font_size=40,
+                         anchor_x="center",
+                         anchor_y="center",
+                         rotation=0)
+        arcade.draw_text(str(self.power),
+                         500, 75,
+                         colors[level][0],
+                         font_size=40,
+                         anchor_x="center",
+                         anchor_y="center",
+                         rotation=0)
         self.draw_room()
     
     def draw_room(self):
