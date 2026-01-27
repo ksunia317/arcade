@@ -97,6 +97,9 @@ def another_one(x):
     maybe.append(CARDS["pop"])
     maybe.append(CARDS["thief"])
     maybe.append(CARDS["lost_money"])
+    maybe.append(CARDS["merchant"])
+    maybe.append(CARDS["pilgrim"])
+    maybe.append(CARDS["artifact"])
     if (x.cnt == 19):
         x.level += 1
         status = CARDS["status"].copy()
@@ -225,3 +228,82 @@ def bring_lost_money(x):
 
 
 CARDS["lost_money"] = LOST_MONEY
+MERCHANT = example.copy()
+MERCHANT["text"] = "Странствующий торговец"
+MERCHANT["top_text"] = "У меня есть зелье красоты! Всего за 10 монет."
+MERCHANT["texture"] = path + "rogues/scaled_x9/square_39_x5.png"
+MERCHANT["actions"] = ["Купить за 10", "Пройти мимо"]
+MERCHANT["background"] = (210, 180, 100)
+MERCHANT["border_color"] = (160, 140, 80)
+
+
+def merchant_buy(x):
+    if change_p(x, money=-10, atr=25):
+        status = CARDS["status"].copy()
+        status["top_text"] = "Вы стали заметно симпатичнее!"
+        status["texture"] = path + "items/scaled_x9/square_121_x5.png"
+        open_card(x, status)
+
+
+MERCHANT["agree"] = merchant_buy
+MERCHANT["disagree"] = another_one
+CARDS["merchant"] = MERCHANT
+PILGRIM = example.copy()
+PILGRIM["text"] = "Заблудившийся паломник"
+PILGRIM["top_text"] = "Я потерял дорогу... Не могли бы вы дать мне пару монет?"
+PILGRIM["texture"] = path + "rogues/scaled_x9/square_38_x5.png"
+PILGRIM["actions"] = ["Помочь (5)", "Отказать"]
+PILGRIM["background"] = (120, 160, 200)
+PILGRIM["border_color"] = (80, 120, 160)
+
+
+def pilgrim_help(x):
+    if change_p(x, money=-5, karma=15):
+        status = CARDS["status"].copy()
+        status["top_text"] = "Паломник благодарит вас. Народ уважает доброту."
+        status["texture"] = path + "items/scaled_x9/square_140_x5.png"
+        open_card(x, status)
+
+
+def pilgrim_refuse(x):
+    change_p(x, karma=-5)
+    another_one(x)
+
+
+PILGRIM["agree"] = pilgrim_help
+PILGRIM["disagree"] = pilgrim_refuse
+CARDS["pilgrim"] = PILGRIM
+ARTIFACT = example.copy()
+ARTIFACT["text"] = "Древний артефакт"
+ARTIFACT["top_text"] = "Вы нашли светящийся камень. Он пульсирует энергией... Активировать?"
+ARTIFACT["texture"] = path + "items/scaled_x9/square_97_x5.png"
+ARTIFACT["actions"] = ["Активировать", "Оставить"]
+ARTIFACT["background"] = (80, 60, 100)
+ARTIFACT["border_color"] = (120, 90, 150)
+
+
+def artifact_activate(x):
+    if random.choice([True, False]):
+        if change_p(x, power=30):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Артефакт наделил вас невероятной силой!"
+            status["texture"] = path + "items/scaled_x9/square_97_x5.png"
+            open_card(x, status)
+    else:
+        if change_p(x, karma=-20):
+            status = CARDS["status"].copy()
+            status["top_text"] = "Странная энергия испортила вашу ауру. Народ насторожен."
+            status["texture"] = path + "items/scaled_x9/square_97_x5.png"
+            open_card(x, status)
+
+
+def artifact_leave(x):
+    status = CARDS["status"].copy()
+    status["top_text"] = "Вы решили не рисковать. Артефакт остался нетронутым."
+    status["text"] = "Ничего не произошло"
+    open_card(x, status)
+
+
+ARTIFACT["agree"] = artifact_activate
+ARTIFACT["disagree"] = artifact_leave
+CARDS["artifact"] = ARTIFACT
