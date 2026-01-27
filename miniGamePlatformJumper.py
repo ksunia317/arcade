@@ -17,6 +17,48 @@ HORIZONTAL_RANGE = 200
 SKY_TEXTURE_HEIGHT = 1024
 
 
+class Particle:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.vx = random.uniform(-3, 3)
+        self.vy = random.uniform(2, 8)
+        self.life = 1.0
+        self.color = (random.randint(200, 255), random.randint(100, 200), random.randint(50, 100))
+        self.size = random.uniform(3, 6)
+
+    def update(self):
+        self.x += self.vx
+        self.y += self.vy
+        self.vy -= 0.3
+        self.life -= 0.03
+        self.size *= 0.98
+
+    def draw(self):
+        alpha = int(self.life * 255)
+        color_with_alpha = (*self.color, alpha)
+        arcade.draw_circle_filled(self.x, self.y, self.size, color_with_alpha)
+
+
+class ParticleSystem:
+    def __init__(self):
+        self.particles = []
+
+    def emit(self, x, y, count=15):
+        for _ in range(count):
+            self.particles.append(Particle(x, y))
+
+    def update(self):
+        for particle in self.particles[:]:
+            particle.update()
+            if particle.life <= 0:
+                self.particles.remove(particle)
+
+    def draw(self):
+        for particle in self.particles:
+            particle.draw()
+
+
 class PlatformJumperView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -31,6 +73,7 @@ class PlatformJumperView(arcade.View):
         self.player_texture = "assets/minigames/jumper.png"
         self.player_texture_flip = "assets/minigames/jumper_flip.png"
         self.platform_texture = "assets/minigames/platform.png"
+        self.particle_system = ParticleSystem()
 
     def on_show_view(self):
         self.setup()
@@ -139,9 +182,11 @@ class PlatformJumperView(arcade.View):
                 arcade.draw_texture_rect(self.texture, arcade.rect.XYWH(WIDTH // 2, sky_y, WIDTH, SKY_TEXTURE_HEIGHT))
             self.platform_list.draw()
             self.player_list.draw()
+            self.particle_system.draw()
         self.manager.draw()
 
     def on_update(self, delta_time):
+        self.particle_system.update()
         if self.game_state == "paused":
             return
         if self.game_state == "game_over":
@@ -185,6 +230,7 @@ class PlatformJumperView(arcade.View):
             if key == arcade.key.UP:
                 if self.physics_engine.can_jump():
                     self.player.change_y = JUMP_STRENGTH
+                    self.particle_system.emit(self.player.center_x, self.player.bottom)
             elif key == arcade.key.LSHIFT or key == arcade.key.RSHIFT:
                 self.game_state = "paused"
                 self.pause_anchor.visible = True
@@ -202,7 +248,6 @@ class PlatformJumperView(arcade.View):
                 self.restart_game()
             elif key == arcade.key.ESCAPE:
                 self.back_to_miniGames()
-
         if key not in self.held_keys:
             self.held_keys.append(key)
 
@@ -211,6 +256,7 @@ class PlatformJumperView(arcade.View):
         self.score_display.text = f"Высота: {self.score - 149}"
         self.game_over_anchor.visible = True
         self.pause_anchor.visible = False
+        self.particle_system.emit(self.player.center_x, self.player.center_y, 30)
 
     def on_key_release(self, key, modifiers):
         if key not in (arcade.key.LEFT, arcade.key.RIGHT):
@@ -243,6 +289,7 @@ class PlatformJumperView(arcade.View):
         self.game_over_anchor.visible = False
         self.pause_anchor.visible = False
         self.held_keys.clear()
+        self.particle_system.particles.clear()
 
     def back_to_miniGames(self):
         from miniGames import MiniGamesView
