@@ -32,7 +32,7 @@ class FlappyBirdView(arcade.View):
         self.manager.disable()
 
     def setup(self):
-        self.texture = arcade.load_texture("images/miniGames_background_FlappyBird.png")
+        self.texture = arcade.load_texture("../images/miniGames_background_FlappyBird.png")
         self.bird = Bird()
         self.bird_list = arcade.SpriteList()
         self.bird_list.append(self.bird)
@@ -162,9 +162,9 @@ class Bird(arcade.Sprite):
     def __init__(self):
         super().__init__()
         self.textures = [
-            arcade.load_texture("assets/minigames/yellowbird-downflap.png"),
-            arcade.load_texture("assets/minigames/yellowbird-midflap.png"),
-            arcade.load_texture("assets/minigames/yellowbird-upflap.png")
+            arcade.load_texture("../assets/minigames/yellowbird-downflap.png"),
+            arcade.load_texture("../assets/minigames/yellowbird-midflap.png"),
+            arcade.load_texture("../assets/minigames/yellowbird-upflap.png")
         ]
         self.texture = self.textures[0]
         self.scale = 1.0

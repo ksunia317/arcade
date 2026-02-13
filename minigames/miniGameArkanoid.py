@@ -25,8 +25,8 @@ class ArkanoidView(arcade.View):
         self.lives = LIVES
         self.manager = UIManager()
         self.held_keys = []
-        self.heart_texture = arcade.load_texture("assets/minigames/heart.png")
-        self.bounce_sound = arcade.load_sound("sounds/bounce.mp3")
+        self.heart_texture = arcade.load_texture("../assets/minigames/heart.png")
+        self.bounce_sound = arcade.load_sound("../sounds/bounce.mp3")
 
     def on_show_view(self):
         self.setup()
@@ -36,7 +36,7 @@ class ArkanoidView(arcade.View):
         self.manager.disable()
 
     def setup(self):
-        self.background_texture = arcade.load_texture("images/miniGames_background_Arkanoid.png")
+        self.background_texture = arcade.load_texture("../images/miniGames_background_Arkanoid.png")
         self.create_paddle()
         self.paddle.center_x = WIDTH // 2
         self.paddle.center_y = 50
@@ -54,7 +54,7 @@ class ArkanoidView(arcade.View):
         self.setup_widgets()
 
     def create_paddle(self):
-        self.paddle = arcade.Sprite("assets/minigames/platform.png")
+        self.paddle = arcade.Sprite("../assets/minigames/platform.png")
         self.paddle.width = PADDLE_WIDTH
         self.paddle.height = PADDLE_HEIGHT
         self.paddle.center_x = WIDTH // 2

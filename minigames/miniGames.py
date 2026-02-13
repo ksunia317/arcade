@@ -1,5 +1,5 @@
 import arcade
-from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIFlatButton, UITextureButton
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIFlatButton
 
 WIDTH = 800
 HEIGHT = 600
@@ -26,7 +26,7 @@ class MiniGamesView(arcade.View):
         self.manager.disable()
 
     def setup(self):
-        self.texture = arcade.load_texture("images/menu_backgroud.png")
+        self.texture = arcade.load_texture("../images/menu_backgroud.png")
 
     def setup_widgets(self):
         anchor_layout = UIAnchorLayout()
@@ -55,17 +55,17 @@ class MiniGamesView(arcade.View):
         self.manager.draw()
 
     def flap_game_open(self, event=None):
-        from miniGameFlappyBird import FlappyBirdView
+        from minigames.miniGameFlappyBird import FlappyBirdView
         flappy_view = FlappyBirdView()
         self.window.show_view(flappy_view)
 
     def jump_game_open(self, event=None):
-        from miniGamePlatformJumper import PlatformJumperView
+        from minigames.miniGamePlatformJumper import PlatformJumperView
         jumper_view = PlatformJumperView()
         self.window.show_view(jumper_view)
 
     def arkanoid_game_open(self, event=None):
-        from miniGameArkanoid import ArkanoidView
+        from minigames.miniGameArkanoid import ArkanoidView
         arkanoid_view = ArkanoidView()
         self.window.show_view(arkanoid_view)
 

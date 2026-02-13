@@ -83,7 +83,7 @@ class PlatformJumperView(arcade.View):
         self.manager.disable()
 
     def setup(self):
-        self.texture = arcade.load_texture("images/miniGames_background_PlatformJumper.png")
+        self.texture = arcade.load_texture("../images/miniGames_background_PlatformJumper.png")
         self.player = arcade.Sprite(self.player_texture, scale=0.5)
         self.player.center_x = WIDTH // 2
         self.player.center_y = HEIGHT // 4

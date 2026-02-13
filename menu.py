@@ -64,7 +64,7 @@ class MenuView(arcade.View):
         self.window.show_view(run_view)
 
     def open_minigames(self, event=None):
-        from miniGames import MiniGamesView
+        from minigames.miniGames import MiniGamesView
         mini_games_view = MiniGamesView()
         self.window.show_view(mini_games_view)
 
