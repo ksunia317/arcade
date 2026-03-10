@@ -1,0 +1,321 @@
+import arcade
+from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel
+from arcade.camera import Camera2D
+import random
+import json
+
+from .constants import (
+    WIDTH,
+    HEIGHT,
+    GRAVITY,
+    JUMP_STRENGTH,
+    PLAYER_SPEED,
+    CAMERA_SPEED,
+    MIN_PLATFORM_GAP,
+    MAX_PLATFORM_GAP,
+    SKY_TEXTURE_HEIGHT,
+)
+from .player import Player
+from .platform import create_random_platform
+from .particle import ParticleSystem
+
+
+class PlatformJumperView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.background_color = arcade.color.SKY_BLUE
+        self.game_state = "playing"
+        self.score = 0
+        self.death_timer = 0
+        self.camera = Camera2D(position=(WIDTH // 2, HEIGHT // 2), zoom=1.0)
+        self.manager = UIManager()
+        self.held_keys = []
+        self.physics_engine = None
+        self.player_texture = "assets/minigames/jumper.png"
+        self.player_texture_flip = "assets/minigames/jumper_flip.png"
+        self.jump_sound = arcade.load_sound("sounds/jump.mp3")
+        self.particle_system = ParticleSystem()
+        self.records_file = "data/records.json"
+        self.game_name = "Platform Jumper"
+
+    def on_show_view(self):
+        self.setup()
+        self.manager.enable()
+
+    def on_hide_view(self):
+        self.manager.disable()
+
+    def setup(self):
+        self.texture = arcade.load_texture(
+            "images/mini_games_background_platform_jumper.png"
+        )
+        self.player = Player(self.player_texture, self.player_texture_flip, scale=0.5)
+        self.player_list = arcade.SpriteList()
+        self.player_list.append(self.player)
+        self.platform_list = arcade.SpriteList()
+        self.init_platforms()
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player,
+            self.platform_list,
+            gravity_constant=GRAVITY,
+            ladders=None,
+            walls=self.platform_list,
+        )
+        self.setup_widgets()
+
+    def init_platforms(self):
+        start_platform = create_random_platform()
+        start_platform.center_x = WIDTH // 2
+        start_platform.center_y = 100
+        start_platform.make_wider()
+        self.platform_list.append(start_platform)
+        current_y = 100
+        for i in range(15):
+            platform = create_random_platform(self.platform_list[-1], current_y)
+            self.platform_list.append(platform)
+            current_y += random.randint(MIN_PLATFORM_GAP, MAX_PLATFORM_GAP)
+
+    def setup_widgets(self):
+        self.score_label = UILabel(
+            text=f"Высота: {int(self.player.center_y)}",
+            x=20,
+            y=HEIGHT - 40,
+            width=200,
+            height=30,
+            font_size=20,
+            text_color=arcade.color.BLACK,
+        )
+        self.manager.add(self.score_label)
+        self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
+        pause_label = UILabel(
+            text="ПАУЗА",
+            width=300,
+            height=60,
+            font_size=40,
+            text_color=arcade.color.RED,
+            align="center",
+        )
+        self.pause_panel.add(pause_label)
+        continue_label = UILabel(
+            text="Shift - продолжить",
+            width=300,
+            height=30,
+            font_size=18,
+            text_color=arcade.color.BLACK,
+            align="center",
+        )
+        self.pause_panel.add(continue_label)
+        menu_label = UILabel(
+            text="ESC - в меню",
+            width=300,
+            height=30,
+            font_size=18,
+            text_color=arcade.color.BLACK,
+            align="center",
+        )
+        self.pause_panel.add(menu_label)
+        self.pause_anchor = UIAnchorLayout()
+        self.pause_anchor.add(
+            child=self.pause_panel, anchor_x="center", anchor_y="center"
+        )
+        self.pause_anchor.visible = False
+        self.manager.add(self.pause_anchor)
+        self.game_over_panel = UIBoxLayout(vertical=True, space_between=20)
+        game_over_label = UILabel(
+            text="GAME OVER",
+            width=400,
+            height=80,
+            font_size=50,
+            text_color=arcade.color.RED,
+            align="center",
+        )
+        self.game_over_panel.add(game_over_label)
+        self.score_display = UILabel(
+            text=f"Высота: {int(self.player.center_y)}",
+            width=300,
+            height=50,
+            font_size=30,
+            text_color=arcade.color.BLACK,
+            align="center",
+        )
+        self.game_over_panel.add(self.score_display)
+        restart_label = UILabel(
+            text="Пробел - заново",
+            width=300,
+            height=30,
+            font_size=18,
+            text_color=arcade.color.BLACK,
+            align="center",
+        )
+        self.game_over_panel.add(restart_label)
+        menu_label2 = UILabel(
+            text="ESC - в меню",
+            width=300,
+            height=30,
+            font_size=18,
+            text_color=arcade.color.BLACK,
+            align="center",
+        )
+        self.game_over_panel.add(menu_label2)
+        self.game_over_anchor = UIAnchorLayout()
+        self.game_over_anchor.add(
+            child=self.game_over_panel, anchor_x="center", anchor_y="center"
+        )
+        self.game_over_anchor.visible = False
+        self.manager.add(self.game_over_anchor)
+
+    def on_draw(self):
+        self.clear()
+        camera_y = self.camera.position[1]
+        camera_bottom = camera_y - HEIGHT // 2
+        sky_start_y = (camera_bottom // SKY_TEXTURE_HEIGHT) * SKY_TEXTURE_HEIGHT
+        with self.camera.activate():
+            for y_offset in range(0, HEIGHT + SKY_TEXTURE_HEIGHT, SKY_TEXTURE_HEIGHT):
+                sky_y = sky_start_y + y_offset + SKY_TEXTURE_HEIGHT // 2
+                arcade.draw_texture_rect(
+                    self.texture,
+                    arcade.rect.XYWH(WIDTH // 2, sky_y, WIDTH, SKY_TEXTURE_HEIGHT),
+                )
+            self.platform_list.draw()
+            self.player_list.draw()
+            self.particle_system.draw()
+        self.manager.draw()
+
+    def on_update(self, delta_time):
+        self.particle_system.update()
+        if self.game_state == "paused":
+            return
+        if self.game_state == "game_over":
+            self.death_timer += delta_time
+            return
+        if self.physics_engine:
+            self.physics_engine.update()
+        if arcade.key.LEFT in self.held_keys:
+            self.player.change_x = -PLAYER_SPEED
+            self.player.update_animation("left")
+        elif arcade.key.RIGHT in self.held_keys:
+            self.player.change_x = PLAYER_SPEED
+            self.player.update_animation("right")
+        else:
+            self.player.change_x = 0
+        camera_bottom = self.camera.position[1] - HEIGHT // 2
+        for platform in self.platform_list[:]:
+            if platform.top < camera_bottom - 100:
+                self.platform_list.remove(platform)
+        camera_top = self.camera.position[1] + HEIGHT // 2
+        highest_platform = max([p.center_y for p in self.platform_list], default=0)
+        if highest_platform < camera_top + 300:
+            new_platform = create_random_platform(self.platform_list[-1])
+            self.platform_list.append(new_platform)
+        if self.physics_engine:
+            self.physics_engine.walls = self.platform_list
+        target_y = self.player.center_y
+        current_y = self.camera.position[1]
+        new_y = current_y + (target_y - current_y) * CAMERA_SPEED * delta_time
+        self.camera.position = (WIDTH // 2, new_y)
+        self.score = max(self.score, int(self.player.center_y))
+        self.score_label.text = f"Высота: {self.score - 149}"
+        if self.player.top < camera_bottom - 50:
+            self.game_over()
+
+    def on_key_press(self, key, modifiers):
+        if key not in (
+            arcade.key.SPACE,
+            arcade.key.UP,
+            arcade.key.LEFT,
+            arcade.key.RIGHT,
+            arcade.key.LSHIFT,
+            arcade.key.RSHIFT,
+            arcade.key.ESCAPE,
+        ):
+            return
+        if self.game_state == "playing":
+            if key == arcade.key.UP:
+                if self.physics_engine.can_jump():
+                    arcade.play_sound(self.jump_sound)
+                    self.player.change_y = JUMP_STRENGTH
+                    self.particle_system.emit(self.player.center_x, self.player.bottom)
+            elif key in (arcade.key.LSHIFT, arcade.key.RSHIFT):
+                self.game_state = "paused"
+                self.pause_anchor.visible = True
+                self.game_over_anchor.visible = False
+            elif key == arcade.key.ESCAPE:
+                self.back_to_minigames()
+        elif self.game_state == "paused":
+            if key in (arcade.key.LSHIFT, arcade.key.RSHIFT):
+                self.game_state = "playing"
+                self.pause_anchor.visible = False
+            elif key == arcade.key.ESCAPE:
+                self.back_to_minigames()
+        elif self.game_state == "game_over":
+            if key == arcade.key.SPACE:
+                self.restart_game()
+            elif key == arcade.key.ESCAPE:
+                self.back_to_minigames()
+        if key not in self.held_keys:
+            self.held_keys.append(key)
+
+    def on_key_release(self, key, modifiers):
+        if key not in (arcade.key.LEFT, arcade.key.RIGHT):
+            return
+        if key in self.held_keys:
+            self.held_keys.remove(key)
+            if not (
+                arcade.key.LEFT in self.held_keys or arcade.key.RIGHT in self.held_keys
+            ):
+                self.player.change_x = 0
+        else:
+            if key in self.held_keys:
+                self.held_keys.remove(key)
+
+    def game_over(self):
+        self.game_state = "game_over"
+        final_score = self.score - 149
+        self.score_display.text = f"Высота: {final_score}"
+        self.game_over_anchor.visible = True
+        self.pause_anchor.visible = False
+        self.particle_system.emit(self.player.center_x, self.player.center_y, 30)
+        self.save_score(final_score)
+
+    def save_score(self, final_score):
+        with open(self.records_file, "r", encoding="utf-8") as f:
+            all_records = json.load(f)
+        game_records = all_records.get(self.game_name, [])
+        game_records.append({"score": final_score})
+        game_records.sort(key=lambda x: x["score"], reverse=True)
+        game_records = game_records[:5]
+        for i, record in enumerate(game_records, 1):
+            record["place"] = i
+        all_records[self.game_name] = game_records
+        with open(self.records_file, "w", encoding="utf-8") as f:
+            json.dump(all_records, f, ensure_ascii=False, indent=2)
+
+    def restart_game(self):
+        self.game_state = "playing"
+        self.score = 0
+        self.death_timer = 0
+        self.player_list.clear()
+        self.player = Player(self.player_texture, self.player_texture_flip, scale=0.5)
+        self.player_list.append(self.player)
+        self.platform_list.clear()
+        self.init_platforms()
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player,
+            self.platform_list,
+            gravity_constant=GRAVITY,
+            ladders=None,
+            walls=self.platform_list,
+        )
+        self.camera.position = (WIDTH // 2, HEIGHT // 2)
+        self.score_label.text = f"Высота: {self.score - 149}"
+        self.score_display.text = f"Высота: {self.score - 149}"
+        self.game_over_anchor.visible = False
+        self.pause_anchor.visible = False
+        self.held_keys.clear()
+        self.particle_system.clear()
+
+    def back_to_minigames(self):
+        from windows.mini_games import MiniGamesView
+
+        miniGames_view = MiniGamesView()
+        self.window.show_view(miniGames_view)

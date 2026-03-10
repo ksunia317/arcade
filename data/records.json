@@ -1,0 +1,31 @@
+{
+  "Flappy Bird": [
+    {
+      "score": 8,
+      "place": 1
+    },
+    {
+      "score": 5,
+      "place": 2
+    },
+    {
+      "score": 4,
+      "place": 3
+    },
+    {
+      "score": 3,
+      "place": 4
+    },
+    {
+      "score": 2,
+      "place": 5
+    }
+  ],
+  "Platform Jumper": [],
+  "Arkanoid": [
+    {
+      "score": 420,
+      "place": 1
+    }
+  ]
+}

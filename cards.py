@@ -12,7 +12,7 @@ def figth(x, power):
 
 
 def claim_for_POP(x, money):
-    if (change_p(x, money=money)):
+    if change_p(x, money=money):
         status = CARDS["status"].copy()
         status["top_text"] = "Налог Уплачен, народ вас любит"
         status["texture"] = path + "items/scaled_x9/square_141_x5.png"
@@ -52,17 +52,17 @@ def change_p(x, karma=0, money=0, power=0, atr=0):
     elif power < 0:
         status["top_text"] = "Недостаток силы"
         f = 1
-    if (f):
+    if f:
         status["text"] = f"СЧЕТ: {x.cnt}"
         mx = 0
         try:
-            with open("conf.json", "r") as f:
+            with open("data/conf.json", "r") as f:
                 mx = loads(f)[0]
         except Exception:
             pass
-        if (mx < x.cnt):
+        if mx < x.cnt:
             status["text"] = f"ЛУЧШИЙ СЧЕТ: {x.cnt}"
-            with open("conf.json", "w") as f:
+            with open("data/conf.json", "w") as f:
                 dump([x.cnt], f)
         open_card(x, status)
         return False
@@ -86,7 +86,7 @@ def pet(x):
     if "dogged" not in x.effects:
         x.effects.append("dogged")
         x.karma += 5
-        if (x.karma > 300):
+        if x.karma > 300:
             x.karma = 300
 
 
@@ -101,51 +101,53 @@ def another_one(x):
     maybe.append(CARDS["pilgrim"])
     maybe.append(CARDS["artifact"])
     maybe.append(CARDS["altar"])
-    if (x.cnt == 19):
+    if x.cnt == 19:
         x.level += 1
         status = CARDS["status"].copy()
         status["top_text"] = "ВЫ ПЕРЕШЛИ НА НОВЫЙ УРОВЕНЬ"
         open_card(x, status)
     else:
-        x.rooms[-1]['card'] = random.choice(maybe).copy()
+        x.rooms[-1]["card"] = random.choice(maybe).copy()
     x.cnt += 1
 
 
 def mage_func(x, color):
     if color == "blue":
-        if (change_p(x, atr=15)):
+        if change_p(x, atr=15):
             status = CARDS["status"].copy()
             status["top_text"] = "Ваше лицо стало привлекательнее"
             open_card(x, status)
     if color == "red":
-        if (change_p(x, power=15)):
+        if change_p(x, power=15):
             status = CARDS["status"].copy()
             status["top_text"] = "Вас переполняет мощь"
             status["texture"] = path + "items/scaled_x9/square_19_x5.png"
             open_card(x, status)
     if color == "yellow":
-        if (change_p(x, money=15)):
+        if change_p(x, money=15):
             status = CARDS["status"].copy()
             status["top_text"] = "Кошелек тяжелеет"
             status["texture"] = path + "items/scaled_x9/square_141_x5.png"
             open_card(x, status)
     if color == "green":
-        if (change_p(x, karma=15)):
+        if change_p(x, karma=15):
             status = CARDS["status"].copy()
             status["top_text"] = "Народ доволен"
             open_card(x, status)
 
 
-example = {"border_color": (255, 255, 255),
-           "background": (100, 100, 100),
-           "text": "Пьяный Эльф",
-           "text_color": (255, 255, 0),
-           "texture": "assets/rogues/scaled_x9/square_1_x5.png",
-           "scale": 2.0,
-           "actions": ["ДА", "Нет"],
-           "agree": lambda x: another_one(x),
-           "disagree": lambda x: another_one(x),
-           "top_text": "BEBEBE"}
+example = {
+    "border_color": (255, 255, 255),
+    "background": (100, 100, 100),
+    "text": "Пьяный Эльф",
+    "text_color": (255, 255, 0),
+    "texture": "assets/rogues/scaled_x9/square_1_x5.png",
+    "scale": 2.0,
+    "actions": ["ДА", "Нет"],
+    "agree": lambda x: another_one(x),
+    "disagree": lambda x: another_one(x),
+    "top_text": "BEBEBE",
+}
 CARDS = {}
 STATUS_CARD = example.copy()
 STATUS_CARD["actions"] = ["ЧТО?", "ЧТО?"]
@@ -155,16 +157,23 @@ STATUS_CARD["text"] = "ВНИМАНИЕ"
 STATUS_CARD["background"] = (61, 1, 29)
 STATUS_CARD["border_color"] = (45, 0, 21)
 CARDS["status"] = STATUS_CARD
-DOG_1 = dict(zip(list(example.keys()), [(152, 31, 0),
-                                        (183, 162, 16),
-                                        "СОБАКА",
-                                        (0, 0, 0),
-                                        path + "animals/scaled_x9/square_20_x5.png",
-                                        1.5,
-                                        ["Погладить", "Уйти"],
-                                        pet,
-                                        another_one,
-                                        "Он хочет, чтобы его погладили..."]))
+DOG_1 = dict(
+    zip(
+        list(example.keys()),
+        [
+            (152, 31, 0),
+            (183, 162, 16),
+            "СОБАКА",
+            (0, 0, 0),
+            path + "animals/scaled_x9/square_20_x5.png",
+            1.5,
+            ["Погладить", "Уйти"],
+            pet,
+            another_one,
+            "Он хочет, чтобы его погладили...",
+        ],
+    )
+)
 DOG_2 = DOG_1.copy()
 DOG_2["texture"] = path + "animals/scaled_x9/square_21_x5.png"
 CARDS["just_a_dogs"] = [DOG_1, DOG_2]
@@ -174,7 +183,7 @@ MAGE["text"] = "КРУТОЙ МАГ"
 MAGE["top_text"] = "синий или красный?"
 MAGE["agree"] = lambda x: mage_func(x, "blue")
 MAGE["disagree"] = lambda x: mage_func(x, "red")
-MAGE['actions'] = ["Синий", "Красный"]
+MAGE["actions"] = ["Синий", "Красный"]
 MAGE["background"] = (68, 4, 206)
 MAGE["border_color"] = (46, 19, 104)
 MAGE_2 = MAGE.copy()
@@ -221,7 +230,7 @@ LOST_MONEY["disagree"] = lambda x: bring_lost_money(x)
 
 
 def bring_lost_money(x):
-    if (change_p(x, karma=-10, money=20)):
+    if change_p(x, karma=-10, money=20):
         status = CARDS["status"].copy()
         status["top_text"] = "Вам очень стыдно"
         status["text"] = "+20 денег"
@@ -276,7 +285,9 @@ PILGRIM["disagree"] = pilgrim_refuse
 CARDS["pilgrim"] = PILGRIM
 ARTIFACT = example.copy()
 ARTIFACT["text"] = "Древний артефакт"
-ARTIFACT["top_text"] = "Вы нашли светящийся камень. Он пульсирует энергией... Активировать?"
+ARTIFACT["top_text"] = (
+    "Вы нашли светящийся камень. Он пульсирует энергией... Активировать?"
+)
 ARTIFACT["texture"] = path + "items/scaled_x9/square_97_x5.png"
 ARTIFACT["actions"] = ["Активировать", "Оставить"]
 ARTIFACT["background"] = (80, 60, 100)
@@ -293,7 +304,9 @@ def artifact_activate(x):
     else:
         if change_p(x, karma=-20):
             status = CARDS["status"].copy()
-            status["top_text"] = "Странная энергия испортила вашу ауру. Народ насторожен."
+            status["top_text"] = (
+                "Странная энергия испортила вашу ауру. Народ насторожен."
+            )
             status["texture"] = path + "items/scaled_x9/square_97_x5.png"
             open_card(x, status)
 
@@ -324,7 +337,7 @@ def altar_sacrifice(x):
         status["text"] = "Попробуйте позже"
         open_card(x, status)
         return
-    
+
     if change_p(x, power=-20, karma=30):
         status = CARDS["status"].copy()
         status["top_text"] = "Народ благодарит вас за жертву! Ваша мудрость признана."
