@@ -12,7 +12,7 @@ from .constants import (
 )
 
 
-class LevelSelectView(arcade.View):
+class FinalView(arcade.View):
     def __init__(self):
         super().__init__()
         self.background_color = COLOR_PARCHMENT
@@ -31,41 +31,41 @@ class LevelSelectView(arcade.View):
 
     def setup_widgets(self):
         anchor_layout = UIAnchorLayout()
-        main_box = UIBoxLayout(vertical=True, space_between=20)
+        main_box = UIBoxLayout(vertical=True, space_between=30)
 
         title_label = UILabel(
-            text="Выберите уровень",
-            width=400,
-            height=50,
-            font_size=40,
-            text_color=COLOR_PARCHMENT,
+            text="ПОЗДРАВЛЯЕМ!",
+            width=500,
+            height=80,
+            font_size=60,
+            text_color=COLOR_GOLD,
             bold=True,
             align="center",
         )
         main_box.add(title_label)
 
-        levels_box = UIBoxLayout(vertical=True, space_between=10)
+        subtitle_label = UILabel(
+            text="Вы прошли все 5 уровней!",
+            width=400,
+            height=40,
+            font_size=24,
+            text_color=COLOR_PARCHMENT,
+            align="center",
+        )
+        main_box.add(subtitle_label)
 
-        for i in range(1, 6):
-            level_button = UIFlatButton(width=200, height=50, text=f"Уровень {i}")
-            level_button.style = {
-                "normal": UIFlatButton.UIStyle(
-                    bg=COLOR_DARK_OAK, border=None, font_color=COLOR_GOLD
-                ),
-                "hover": UIFlatButton.UIStyle(
-                    bg=COLOR_GOLD, border=None, font_color=COLOR_DARK_OAK
-                ),
-                "press": UIFlatButton.UIStyle(
-                    bg=COLOR_OCHRE, border=None, font_color=COLOR_SILVER
-                ),
-            }
-            level_button.on_click = lambda event, level=i: self.start_level(level)
-            levels_box.add(level_button)
+        stars_label = UILabel(
+            text="★★★★★",
+            width=200,
+            height=50,
+            font_size=40,
+            text_color=COLOR_GOLD,
+            align="center",
+        )
+        main_box.add(stars_label)
 
-        main_box.add(levels_box)
-
-        back_button = UIFlatButton(width=200, height=50, text="Назад")
-        back_button.style = {
+        menu_button = UIFlatButton(width=250, height=60, text="Главное меню")
+        menu_button.style = {
             "normal": UIFlatButton.UIStyle(
                 bg=COLOR_DARK_OAK, border=None, font_color=COLOR_GOLD
             ),
@@ -76,8 +76,8 @@ class LevelSelectView(arcade.View):
                 bg=COLOR_OCHRE, border=None, font_color=COLOR_SILVER
             ),
         }
-        back_button.on_click = self.back_to_minigames
-        main_box.add(back_button)
+        menu_button.on_click = self.back_to_main_menu
+        main_box.add(menu_button)
 
         anchor_layout.add(child=main_box, anchor_x="center_x", anchor_y="center_y")
         self.manager.add(anchor_layout)
@@ -89,14 +89,12 @@ class LevelSelectView(arcade.View):
         )
         self.manager.draw()
 
-    def start_level(self, level):
-        from .view import ArkanoidView
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.back_to_main_menu()
 
-        game_view = ArkanoidView(level)
-        self.window.show_view(game_view)
+    def back_to_main_menu(self, event=None):
+        from windows.menu import MenuView
 
-    def back_to_minigames(self, event=None):
-        from windows.mini_games import MiniGamesView
-
-        menu_view = MiniGamesView()
+        menu_view = MenuView()
         self.window.show_view(menu_view)

@@ -1,8 +1,9 @@
 import arcade
 from arcade.gui import UIManager, UIAnchorLayout, UIBoxLayout, UILabel
 
-from .constants import WIDTH, HEIGHT
+from .constants import HEIGHT
 from .game import ArkanoidGame
+from .final_window import FinalView
 
 
 class ArkanoidView(arcade.View):
@@ -12,10 +13,12 @@ class ArkanoidView(arcade.View):
         self.background_color = arcade.color.BLACK
         self.game = ArkanoidGame(level)
         self.manager = UIManager()
+        self.final_victory_shown = False
 
     def on_show_view(self):
         self.setup_ui()
         self.manager.enable()
+        self.final_victory_shown = False
 
     def on_hide_view(self):
         self.manager.disable()
@@ -102,47 +105,44 @@ class ArkanoidView(arcade.View):
         self.game_over_anchor.visible = False
         self.manager.add(self.game_over_anchor)
 
-        self.victory_panel = UIBoxLayout(vertical=True, space_between=20)
-        victory_label = UILabel(
-            text="ПОБЕДА!",
-            width=400,
-            height=80,
-            font_size=50,
-            text_color=arcade.color.GREEN,
-            align="center",
-        )
-        self.victory_panel.add(victory_label)
-
         if self.game.level < 5:
+            self.victory_panel = UIBoxLayout(vertical=True, space_between=20)
+            victory_label = UILabel(
+                text="ПОБЕДА!",
+                width=400,
+                height=80,
+                font_size=50,
+                text_color=arcade.color.GREEN,
+                align="center",
+            )
+            self.victory_panel.add(victory_label)
+
             next_text = "Пробел - следующий уровень"
-        else:
-            next_text = "Пробел - начать заново"
+            self.next_level_label = UILabel(
+                text=next_text,
+                width=300,
+                height=30,
+                font_size=18,
+                text_color=arcade.color.WHITE,
+                align="center",
+            )
+            self.victory_panel.add(self.next_level_label)
 
-        self.next_level_label = UILabel(
-            text=next_text,
-            width=300,
-            height=30,
-            font_size=18,
-            text_color=arcade.color.WHITE,
-            align="center",
-        )
-        self.victory_panel.add(self.next_level_label)
-
-        menu_label3 = UILabel(
-            text="ESC - в меню",
-            width=300,
-            height=30,
-            font_size=18,
-            text_color=arcade.color.WHITE,
-            align="center",
-        )
-        self.victory_panel.add(menu_label3)
-        self.victory_anchor = UIAnchorLayout()
-        self.victory_anchor.add(
-            child=self.victory_panel, anchor_x="center", anchor_y="center"
-        )
-        self.victory_anchor.visible = False
-        self.manager.add(self.victory_anchor)
+            menu_label3 = UILabel(
+                text="ESC - в меню",
+                width=300,
+                height=30,
+                font_size=18,
+                text_color=arcade.color.WHITE,
+                align="center",
+            )
+            self.victory_panel.add(menu_label3)
+            self.victory_anchor = UIAnchorLayout()
+            self.victory_anchor.add(
+                child=self.victory_panel, anchor_x="center", anchor_y="center"
+            )
+            self.victory_anchor.visible = False
+            self.manager.add(self.victory_anchor)
 
     def on_draw(self):
         self.clear()
@@ -157,24 +157,36 @@ class ArkanoidView(arcade.View):
     def update_ui_state(self):
         if self.game.game_state == "paused":
             self.pause_anchor.visible = True
-            self.game_over_anchor.visible = False
-            self.victory_anchor.visible = False
+            if hasattr(self, "game_over_anchor"):
+                self.game_over_anchor.visible = False
+            if hasattr(self, "victory_anchor"):
+                self.victory_anchor.visible = False
+
         elif self.game.game_state == "game_over":
             self.pause_anchor.visible = False
             self.game_over_anchor.visible = True
-            self.victory_anchor.visible = False
+            if hasattr(self, "victory_anchor"):
+                self.victory_anchor.visible = False
+
         elif self.game.game_state == "victory":
-            if self.game.level < 5:
-                self.next_level_label.text = "Пробел - следующий уровень"
-            else:
-                self.next_level_label.text = "Пробел - начать заново"
-            self.pause_anchor.visible = False
-            self.game_over_anchor.visible = False
-            self.victory_anchor.visible = True
+            if self.game.level == 5 and not self.final_victory_shown:
+                self.final_victory_shown = True
+                self.show_final_victory()
+            elif hasattr(self, "victory_anchor"):
+                self.pause_anchor.visible = False
+                self.game_over_anchor.visible = False
+                self.victory_anchor.visible = True
+
         else:
             self.pause_anchor.visible = False
-            self.game_over_anchor.visible = False
-            self.victory_anchor.visible = False
+            if hasattr(self, "game_over_anchor"):
+                self.game_over_anchor.visible = False
+            if hasattr(self, "victory_anchor"):
+                self.victory_anchor.visible = False
+
+    def show_final_victory(self):
+        final_view = FinalView()
+        self.window.show_view(final_view)
 
     def on_key_press(self, key, modifiers):
         if key not in (
@@ -212,7 +224,7 @@ class ArkanoidView(arcade.View):
                 if self.game.level < 5:
                     self.next_level()
                 else:
-                    self.restart_game()
+                    self.show_final_victory()
             elif key == arcade.key.ESCAPE:
                 self.back_to_level_select()
 
@@ -225,6 +237,7 @@ class ArkanoidView(arcade.View):
         self.manager.disable()
         self.manager.enable()
         self.setup_ui()
+        self.final_victory_shown = False
 
     def next_level(self):
         self.game.next_level()
@@ -232,6 +245,7 @@ class ArkanoidView(arcade.View):
         self.manager.disable()
         self.manager.enable()
         self.setup_ui()
+        self.final_victory_shown = False
 
     def back_to_level_select(self):
         from .level_select import LevelSelectView

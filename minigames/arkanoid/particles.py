@@ -19,11 +19,11 @@ class DustEffect:
 
         emitter = Emitter(
             center_xy=(x, y),
-            emit_controller=EmitBurst(15),  # 15 частиц за раз
+            emit_controller=EmitBurst(15),
             particle_factory=lambda e: FadeParticle(
                 filename_or_texture=self.dust_texture,
-                change_xy=(random.uniform(-2, 2), random.uniform(1, 3)),  # скорость
-                lifetime=random.uniform(0.5, 1.2),  # время жизни
+                change_xy=(random.uniform(-2, 2), random.uniform(1, 3)),
+                lifetime=random.uniform(0.5, 1.2),
                 start_alpha=200,
                 end_alpha=0,
                 scale=random.uniform(0.3, 0.7),
