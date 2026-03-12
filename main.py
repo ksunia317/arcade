@@ -3,7 +3,7 @@ from windows.menu import MenuView
 
 WIDTH = 800
 HEIGHT = 600
-TITLE = "CardMan"
+TITLE = 'CardMan'
 
 
 def main():
@@ -13,5 +13,5 @@ def main():
     arcade.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

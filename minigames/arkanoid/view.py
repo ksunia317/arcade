@@ -7,7 +7,6 @@ from .final_window import FinalView
 
 
 class ArkanoidView(arcade.View):
-
     def __init__(self, level=1):
         super().__init__()
         self.background_color = arcade.color.BLACK
@@ -24,8 +23,9 @@ class ArkanoidView(arcade.View):
         self.manager.disable()
 
     def setup_ui(self):
+        # Текст с номером текущего уровня
         self.level_label = UILabel(
-            text=f"Уровень: {self.game.level}",
+            text=f'Уровень: {self.game.level}',
             x=20,
             y=HEIGHT - 40,
             width=200,
@@ -35,111 +35,114 @@ class ArkanoidView(arcade.View):
         )
         self.manager.add(self.level_label)
 
+        # Панель паузы
         self.pause_panel = UIBoxLayout(vertical=True, space_between=20)
         pause_label = UILabel(
-            text="ПАУЗА",
+            text='ПАУЗА',
             width=300,
             height=60,
             font_size=40,
             text_color=arcade.color.WHITE,
-            align="center",
+            align='center',
         )
         self.pause_panel.add(pause_label)
         continue_label = UILabel(
-            text="Shift - продолжить",
+            text='Shift - продолжить',
             width=300,
             height=30,
             font_size=18,
             text_color=arcade.color.WHITE,
-            align="center",
+            align='center',
         )
         self.pause_panel.add(continue_label)
         menu_label = UILabel(
-            text="ESC - в меню",
+            text='ESC - в меню',
             width=300,
             height=30,
             font_size=18,
             text_color=arcade.color.WHITE,
-            align="center",
+            align='center',
         )
         self.pause_panel.add(menu_label)
         self.pause_anchor = UIAnchorLayout()
         self.pause_anchor.add(
-            child=self.pause_panel, anchor_x="center", anchor_y="center"
+            child=self.pause_panel, anchor_x='center', anchor_y='center',
         )
         self.pause_anchor.visible = False
         self.manager.add(self.pause_anchor)
 
+        # Панель проигрыша
         self.game_over_panel = UIBoxLayout(vertical=True, space_between=20)
         game_over_label = UILabel(
-            text="GAME OVER",
+            text='GAME OVER',
             width=400,
             height=80,
             font_size=50,
             text_color=arcade.color.RED,
-            align="center",
+            align='center',
         )
         self.game_over_panel.add(game_over_label)
         restart_label = UILabel(
-            text="Пробел - заново",
+            text='Пробел - заново',
             width=300,
             height=30,
             font_size=18,
             text_color=arcade.color.WHITE,
-            align="center",
+            align='center',
         )
         self.game_over_panel.add(restart_label)
         menu_label2 = UILabel(
-            text="ESC - в меню",
+            text='ESC - в меню',
             width=300,
             height=30,
             font_size=18,
             text_color=arcade.color.WHITE,
-            align="center",
+            align='center',
         )
         self.game_over_panel.add(menu_label2)
         self.game_over_anchor = UIAnchorLayout()
         self.game_over_anchor.add(
-            child=self.game_over_panel, anchor_x="center", anchor_y="center"
+            child=self.game_over_panel, anchor_x='center', anchor_y='center',
         )
         self.game_over_anchor.visible = False
         self.manager.add(self.game_over_anchor)
 
+        # Панель победы
         if self.game.level < 5:
             self.victory_panel = UIBoxLayout(vertical=True, space_between=20)
             victory_label = UILabel(
-                text="ПОБЕДА!",
+                text='ПОБЕДА!',
                 width=400,
                 height=80,
                 font_size=50,
                 text_color=arcade.color.GREEN,
-                align="center",
+                align='center',
             )
             self.victory_panel.add(victory_label)
 
-            next_text = "Пробел - следующий уровень"
+            next_text = 'Пробел - следующий уровень'
             self.next_level_label = UILabel(
                 text=next_text,
                 width=300,
                 height=30,
                 font_size=18,
                 text_color=arcade.color.WHITE,
-                align="center",
+                align='center',
             )
             self.victory_panel.add(self.next_level_label)
 
             menu_label3 = UILabel(
-                text="ESC - в меню",
+                text='ESC - в меню',
                 width=300,
                 height=30,
                 font_size=18,
                 text_color=arcade.color.WHITE,
-                align="center",
+                align='center',
             )
             self.victory_panel.add(menu_label3)
             self.victory_anchor = UIAnchorLayout()
             self.victory_anchor.add(
-                child=self.victory_panel, anchor_x="center", anchor_y="center"
+                child=self.victory_panel, anchor_x='center', anchor_y='center',
             )
             self.victory_anchor.visible = False
             self.manager.add(self.victory_anchor)
@@ -152,36 +155,38 @@ class ArkanoidView(arcade.View):
     def on_update(self, delta_time):
         self.game.update(delta_time)
         self.update_ui_state()
-        self.level_label.text = f"Уровень: {self.game.level}"
+        self.level_label.text = f'Уровень: {self.game.level}'
 
     def update_ui_state(self):
-        if self.game.game_state == "paused":
+        # Показываем/скрываем панели в зависимости от состояния игры
+        if self.game.game_state == 'paused':
             self.pause_anchor.visible = True
-            if hasattr(self, "game_over_anchor"):
+            if hasattr(self, 'game_over_anchor'):
                 self.game_over_anchor.visible = False
-            if hasattr(self, "victory_anchor"):
+            if hasattr(self, 'victory_anchor'):
                 self.victory_anchor.visible = False
 
-        elif self.game.game_state == "game_over":
+        elif self.game.game_state == 'game_over':
             self.pause_anchor.visible = False
             self.game_over_anchor.visible = True
-            if hasattr(self, "victory_anchor"):
+            if hasattr(self, 'victory_anchor'):
                 self.victory_anchor.visible = False
 
-        elif self.game.game_state == "victory":
+        elif self.game.game_state == 'victory':
+            # Для 5 уровня показываем финальное окно, для остальных - панель победы
             if self.game.level == 5 and not self.final_victory_shown:
                 self.final_victory_shown = True
                 self.show_final_victory()
-            elif hasattr(self, "victory_anchor"):
+            elif hasattr(self, 'victory_anchor'):
                 self.pause_anchor.visible = False
                 self.game_over_anchor.visible = False
                 self.victory_anchor.visible = True
 
-        else:
+        else:  # состояние 'playing'
             self.pause_anchor.visible = False
-            if hasattr(self, "game_over_anchor"):
+            if hasattr(self, 'game_over_anchor'):
                 self.game_over_anchor.visible = False
-            if hasattr(self, "victory_anchor"):
+            if hasattr(self, 'victory_anchor'):
                 self.victory_anchor.visible = False
 
     def show_final_victory(self):
@@ -189,37 +194,39 @@ class ArkanoidView(arcade.View):
         self.window.show_view(final_view)
 
     def on_key_press(self, key, modifiers):
+        # Игнорирование неигровых клавиш
         if key not in (
-            arcade.key.SPACE,
-            arcade.key.LEFT,
-            arcade.key.RIGHT,
-            arcade.key.LSHIFT,
-            arcade.key.RSHIFT,
-            arcade.key.ESCAPE,
+                arcade.key.SPACE,
+                arcade.key.LEFT,
+                arcade.key.RIGHT,
+                arcade.key.LSHIFT,
+                arcade.key.RSHIFT,
+                arcade.key.ESCAPE,
         ):
             return
 
         self.game.handle_key_press(key)
 
-        if self.game.game_state == "playing":
+        # Обработка клавиш в зависимости от состояния игры
+        if self.game.game_state == 'playing':
             if key == arcade.key.LSHIFT or key == arcade.key.RSHIFT:
-                self.game.game_state = "paused"
+                self.game.game_state = 'paused'
             elif key == arcade.key.ESCAPE:
                 self.back_to_level_select()
 
-        elif self.game.game_state == "paused":
+        elif self.game.game_state == 'paused':
             if key == arcade.key.LSHIFT or key == arcade.key.RSHIFT:
-                self.game.game_state = "playing"
+                self.game.game_state = 'playing'
             elif key == arcade.key.ESCAPE:
                 self.back_to_level_select()
 
-        elif self.game.game_state == "game_over":
+        elif self.game.game_state == 'game_over':
             if key == arcade.key.SPACE:
                 self.restart_game()
             elif key == arcade.key.ESCAPE:
                 self.back_to_level_select()
 
-        elif self.game.game_state == "victory":
+        elif self.game.game_state == 'victory':
             if key == arcade.key.SPACE:
                 if self.game.level < 5:
                     self.next_level()
@@ -249,6 +256,5 @@ class ArkanoidView(arcade.View):
 
     def back_to_level_select(self):
         from .level_select import LevelSelectView
-
         level_select = LevelSelectView()
         self.window.show_view(level_select)
